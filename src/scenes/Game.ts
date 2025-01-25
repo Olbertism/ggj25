@@ -13,18 +13,18 @@ export class Game extends Scene {
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
+  // private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
 
   bubbleContainer: Phaser.GameObjects.Container;
   bubbleZone: Phaser.GameObjects.Rectangle;
   bubbleBody: Phaser.FX.Circle;
 
-  private interactionKey!: Phaser.Input.Keyboard.Key;
+  // private interactionKey!: Phaser.Input.Keyboard.Key;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
 
-  isInteractionEnabled: boolean = false;
-  canInteract: boolean = false;
+  // isInteractionEnabled: boolean = false;
+  // canInteract: boolean = false;
 
   constructor() {
     super('Game');
@@ -89,34 +89,9 @@ export class Game extends Scene {
 
     this.camera.startFollow(this.player);
 
-    // Create an obstacle rectangle
-    this.obstacle = this.add.rectangle(400, 450, 200, 50, 0xff0000); // Red rectangle
-    this.physics.add.existing(this.obstacle, true); // Add physics to the rectangle
-
-    this.obstacleCircle = this.add.circle(400, 450, 40, 0xfff000);
-    this.physics.add.existing(this.obstacleCircle, true);
-
-    this.physics.add.collider(
-      this.player,
-      this.obstacleCircle,
-      null,
-      undefined,
-      this,
-    );
-
-    // Add collision between the player and the obstacle
-    this.physics.add.overlap(
-      this.player,
-      this.obstacle,
-      this.handleProximity,
-      undefined,
-      this,
-    );
-
     // Add objects using ObjectManager
     this.objectManager.createObject(200, 150, 'object', () => {
       console.log('Interacted with object at (200, 150)!');
-
       eventsCenter.emit('toggleInteraction', this);
     });
     /*
@@ -186,17 +161,17 @@ export class Game extends Scene {
       eventsCenter.emit('toggleJournal');
     }
 
-    if (
+    /*     if (
       Phaser.Input.Keyboard.JustDown(this.interactionKey) &&
       this.canInteract
     ) {
       eventsCenter.emit('toggleInteraction', 'data');
-    }
+    } */
 
     // If no longer overlapping, reset canInteract
-    if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
+    /* if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
       this.handleExitProximity();
-    }
+    } */
     if (
       this.player.body?.velocity.x !== 0 ||
       this.player.body?.velocity.y !== 0
@@ -213,7 +188,7 @@ export class Game extends Scene {
     }
   }
 
-  private handleExitProximity() {
+  /* private handleExitProximity() {
     this.canInteract = false;
   }
 
@@ -230,5 +205,5 @@ export class Game extends Scene {
         color: '#ffffff',
       },
     );
-  }
+  } */
 }
