@@ -240,18 +240,6 @@ export class Game extends Scene {
       eventsCenter.emit('toggleInteraction', bubbleData);
     });
 
-    // Old man
-    this.objectManager.createObject(1260, 630, 'old-man', () => {
-      console.log('Interacted with old man at (1230, 1100)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
-    });
-
-    // Old woman
-    this.objectManager.createObject(1150, 630, 'old-woman', () => {
-      console.log('Interacted with old woman at (1230, 1100)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
-    });
-
     // Ray installation
     this.objectManager.createObject(800, 1000, 'lamp', () => {
       console.log('Interacted with rays at (800, 1000)!');
