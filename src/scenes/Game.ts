@@ -4,7 +4,8 @@ import { bubbleData } from '../data/store';
 import { Npc } from '../gameObjects/Npc';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
-import { MapObstacles } from './MapObstacles.ts';
+import { MapObstacles } from './../gameObjects/MapObstacles.ts'
+import {ActionHandler} from "../objects/ActionHandler.ts";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -12,6 +13,7 @@ export class Game extends Scene {
   msg_text: Phaser.GameObjects.Text;
 
   private objectManager: ObjectManager;
+  private actionHandler: ActionHandler;
 
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -32,7 +34,7 @@ export class Game extends Scene {
   private mapObstacles: MapObstacles;
   private obstacleGroup: Phaser.GameObjects.Group;
 
-  movementEnabled: boolean = true; // Flag to enable/disable input
+  movementEnabled: boolean; // Flag to enable/disable input
 
   constructor() {
     super('Game');
@@ -77,6 +79,13 @@ export class Game extends Scene {
   }
 
   create() {
+    // Create ActionHandler and store it in the registry if it doesn't exist
+    if (!this.registry.has('actionHandler')) {
+      this.registry.set('actionHandler', new ActionHandler());
+    }
+
+    const actionHandler: ActionHandler = this.registry.get('actionHandler');
+
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
 
@@ -90,6 +99,7 @@ export class Game extends Scene {
 
     // Initialize ObjectManager
     this.objectManager = new ObjectManager(this);
+    this.actionHandler = new ActionHandler();
 
     //player sprites
     this.anims.create({
@@ -165,6 +175,8 @@ export class Game extends Scene {
 
     this.camera.startFollow(this.player);
 
+    this.movementEnabled = true;
+
     //add npcs to the sceene:
     // Create NPC instances
     this.npcGroup = this.physics.add.staticGroup();
@@ -198,6 +210,7 @@ export class Game extends Scene {
     this.add.existing(cat);
     this.physics.add.existing(cat);
 
+     // add bounding boxes for map objects
     this.mapObstacles = new MapObstacles(this);
     this.obstacleGroup = this.mapObstacles.createObstacles();
 
@@ -326,10 +339,6 @@ export class Game extends Scene {
       this.dKey = this.input.keyboard.addKey('d');
     }
 
-    /* this.input.once('pointerdown', () => {
-      this.scene.start('GameOver');
-    }); */
-
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const worldX = pointer.worldX;
       const worldY = pointer.worldY;
@@ -345,6 +354,14 @@ export class Game extends Scene {
     eventsCenter.on('enableMovement', () => {
       this.movementEnabled = true;
     });
+
+    eventsCenter.on('gameOver', () => {
+      this.scene.stop('Game');
+      this.scene.stop('InteractionUi');
+      this.scene.stop('JournalUi');
+      this.scene.stop('KeyLegendUi');
+      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), totalPoints: this.actionHandler.getTotalPoints()});
+    })
   }
 
   update() {
