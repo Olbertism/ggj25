@@ -1,8 +1,10 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
+import { bubbleData } from '../data/store';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
 import {Npc } from "../gameObjects/Npc";
+import {MapObstacles} from "./MapObstacles.ts";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -14,21 +16,23 @@ export class Game extends Scene {
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  // private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
-
   bubbleContainer: Phaser.GameObjects.Container;
   bubbleZone: Phaser.GameObjects.Rectangle;
   bubbleBody: Phaser.FX.Circle;
-
-  // private interactionKey!: Phaser.Input.Keyboard.Key;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
 
   private npcGroup: Phaser.Physics.Arcade.StaticGroup;
 
+  private wKey!: Phaser.Input.Keyboard.Key;
+  private sKey!: Phaser.Input.Keyboard.Key;
+  private aKey!: Phaser.Input.Keyboard.Key;
+  private dKey!: Phaser.Input.Keyboard.Key;
 
-  // isInteractionEnabled: boolean = false;
-  // canInteract: boolean = false;
+  private mapObstacles: MapObstacles;
+  private obstacleGroup: Phaser.GameObjects.Group;
+
+  movementEnabled: boolean = true; // Flag to enable/disable input
 
   constructor() {
     super('Game');
@@ -146,15 +150,29 @@ export class Game extends Scene {
      this.add.existing(cat);
      this.physics.add.existing(cat);
 
+
+    this.mapObstacles = new MapObstacles(this);
+    this.obstacleGroup = this.mapObstacles.createObstacles();
+
+    this.physics.add.collider(
+      this.player,
+      this.obstacleGroup,
+      undefined,
+      undefined,
+      this,
+    );
+
     // Add objects using ObjectManager
     this.objectManager.createObject(200, 150, 'object', () => {
       console.log('Interacted with object at (200, 150)!');
       eventsCenter.emit('toggleInteraction', this);
     });
-    /*
-    this.objectManager.createObject(300, 250, 'object', () => {
-      console.log('Interacted with object at (300, 250)!');
-    }); */
+
+    // Create bubble
+    this.objectManager.createObject(1230, 1100, 'bubble', () => {
+      console.log('Interacted with bubble at (1230, 1100)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
     
     this.physics.add.collider(this.player, this.npcGroup,  undefined, undefined, this);
     this.physics.add.collider(this.player, cat,  undefined, undefined, this);
@@ -162,23 +180,20 @@ export class Game extends Scene {
     this.physics.add.collider(cat, this.player,  undefined, undefined, this);
 
     // Set up input keys
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.interactionKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.E,
-    );
-    this.journalKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.J,
-    );
+    if( this.input.keyboard != null) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+      this.journalKey = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.J,
+      );
+      this.wKey = this.input.keyboard.addKey("w");
+      this.sKey = this.input.keyboard.addKey("s");
+      this.aKey = this.input.keyboard.addKey("a");
+      this.dKey = this.input.keyboard.addKey("d");
+    }
 
     /* this.input.once('pointerdown', () => {
       this.scene.start('GameOver');
     }); */
-
-    this.bubbleContainer = this.add.container(620, 580);
-    this.bubbleZone = this.add
-      .rectangle(620, 580, 160, 200)
-      .setStrokeStyle(2, 0xfff000);
-    this.bubbleContainer.add(this.bubbleZone);
 
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const worldX = pointer.worldX;
@@ -186,10 +201,24 @@ export class Game extends Scene {
 
       console.log(`Clicked at world position: x: ${worldX}, y: ${worldY}`);
     });
+
+    eventsCenter.on('disableMovement', () => {
+      console.log('disableMovement');
+      this.movementEnabled = false;
+    });
+
+    eventsCenter.on('enableMovement', () => {
+      this.movementEnabled = true;
+    });
   }
 
   update() {
     if (!this.cursors) return;
+
+    if (!this.movementEnabled) {
+      this.player.setVelocity(0, 0); // Stop movement if input is disabled
+      return;
+    }
 
     // Update objects
     this.objectManager.update();
@@ -200,18 +229,18 @@ export class Game extends Scene {
     this.player.setVelocity(0);
 
     // Horizontal movement
-    if (this.cursors.left?.isDown) {
+    if (this.cursors.left?.isDown || this.aKey.isDown) {
       this.player.setVelocityX(-speed);
       this.player.flipX = true;
-    } else if (this.cursors.right?.isDown) {
+    } else if (this.cursors.right?.isDown || this.dKey.isDown) {
       this.player.setVelocityX(speed);
       this.player.flipX = false;
     }
 
     // Vertical movement
-    if (this.cursors.up?.isDown) {
+    if (this.cursors.up?.isDown || this.wKey.isDown) {
       this.player.setVelocityY(-speed);
-    } else if (this.cursors.down?.isDown) {
+    } else if (this.cursors.down?.isDown || this.sKey.isDown) {
       this.player.setVelocityY(speed);
     }
 
@@ -223,17 +252,6 @@ export class Game extends Scene {
       eventsCenter.emit('toggleJournal');
     }
 
-    /*     if (
-      Phaser.Input.Keyboard.JustDown(this.interactionKey) &&
-      this.canInteract
-    ) {
-      eventsCenter.emit('toggleInteraction', 'data');
-    } */
-
-    // If no longer overlapping, reset canInteract
-    /* if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
-      this.handleExitProximity();
-    } */
     if (
       this.player.body?.velocity.x !== 0 ||
       this.player.body?.velocity.y !== 0
@@ -249,23 +267,4 @@ export class Game extends Scene {
       }
     }
   }
-
-  /* private handleExitProximity() {
-    this.canInteract = false;
-  }
-
-  private handleProximity() {
-    this.canInteract = true;
-
-    // Optionally show a hint to the player
-    this.add.text(
-      this.obstacle.x,
-      this.obstacle.y - 20,
-      'Press E to interact',
-      {
-        fontSize: '12px',
-        color: '#ffffff',
-      },
-    );
-  } */
 }
