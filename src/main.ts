@@ -3,6 +3,7 @@ import { Boot } from './scenes/Boot';
 import { Game as MainGame } from './scenes/Game';
 import { GameOver } from './scenes/GameOver';
 import { InteractionUi } from './scenes/InteractionUi';
+import { Intro } from './scenes/Intro';
 import { JournalUi } from './scenes/JournalUi';
 import { KeyLegendUi } from './scenes/KeyLegendUi';
 import { MainMenu } from './scenes/MainMenu';
@@ -30,6 +31,7 @@ const config: Types.Core.GameConfig = {
     Boot,
     Preloader,
     MainMenu,
+    Intro,
     MainGame,
     JournalUi,
     KeyLegendUi,
