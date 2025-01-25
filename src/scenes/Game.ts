@@ -2,7 +2,7 @@ import { Scene } from 'phaser';
 import { background } from '../commons';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
-import {Npc } from "../gameObjects/npc";
+import {Npc } from "../gameObjects/Npc";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -25,6 +25,7 @@ export class Game extends Scene {
   private journalKey!: Phaser.Input.Keyboard.Key;
 
   private npcGroup: Phaser.Physics.Arcade.StaticGroup;
+
 
   // isInteractionEnabled: boolean = false;
   // canInteract: boolean = false;
@@ -50,6 +51,16 @@ export class Game extends Scene {
       frameWidth: 80,
       frameHeight: 120,
   });
+
+  //cat assets:
+    this.load.spritesheet("catIdle", "assets/cat_idle_sprite.png", {
+      frameWidth: 42,
+      frameHeight: 38,
+   });
+    this.load.spritesheet("catWalk", "assets/cat_new_walk_sprite.png", {
+      frameWidth: 42,
+      frameHeight: 38,
+    });
   }
 
   create() {
@@ -99,6 +110,21 @@ export class Game extends Scene {
       repeat: -1,
   });
 
+      //cat sprites
+    this.anims.create({
+        key: "catIdle",
+        frames: this.anims.generateFrameNumbers("catIdle", { frames: [0, 1, 2, 3,4,5,6,7,8] }),
+        frameRate: 4,
+        repeat: -1,
+    });
+
+    this.anims.create({
+      key: "catWalk",
+      frames: this.anims.generateFrameNumbers("catWalk", { frames: [0, 1, 2, 3,4,5] }),
+      frameRate: 4,
+      repeat: -1,
+    });
+
     // Add player to the scene
     //this.player = this.physics.add.sprite(400, 200, 'player');
     this.player.setScale(0.8);
@@ -109,11 +135,16 @@ export class Game extends Scene {
     //add npcs to the sceene:
      // Create NPC instances
      this.npcGroup = this.physics.add.staticGroup();
-     const npc1 = new Npc(this, 300, 300, "npcIdle", "Guard", "npcIdle", 0.8);
+     const npc1 = new Npc(this, 300, 300, "npcIdle", "Guard", 0.8, "npcIdle", "", false);
+     const cat = new Npc(this, 500, 700, "catIdle", "cat",1.5, "catIdle", "catWalk", true);
  
      // Add NPCs to a group for easier management
      this.npcGroup.add(npc1);
-     //this.npcGroup.physics.add
+     
+
+     //ad cat to scene:
+     this.add.existing(cat);
+     this.physics.add.existing(cat);
 
     // Add objects using ObjectManager
     this.objectManager.createObject(200, 150, 'object', () => {
@@ -125,7 +156,10 @@ export class Game extends Scene {
       console.log('Interacted with object at (300, 250)!');
     }); */
     
-    this.physics.add.collider(this.player, this.npcGroup,  this.handleOverlap, undefined, this);
+    this.physics.add.collider(this.player, this.npcGroup,  undefined, undefined, this);
+    this.physics.add.collider(this.player, cat,  undefined, undefined, this);
+    this.physics.add.collider(npc1, cat,  undefined, undefined, this);
+    this.physics.add.collider(cat, this.player,  undefined, undefined, this);
 
     // Set up input keys
     this.cursors = this.input.keyboard.createCursorKeys();
