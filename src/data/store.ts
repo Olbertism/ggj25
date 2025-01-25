@@ -175,7 +175,13 @@ export interface actionObject {
   leadsTo?: string;
 }
 
-export const journalReports = [
+export interface journalReports {
+  title: string;
+  author: string;
+  text: string;
+}
+
+export const journalReports: journalReports[] = [
   {
     title: 'Energy Absorption and Emission Test',
     author: 'Dr. Elias Novak',
@@ -243,8 +249,43 @@ export const journalDossiers = [
     field: 'Experimental Physics',
     affiliation: 'Russian Academy of Sciences, Moscow',
     background:
-      'Specializes in high-energy particle physics. Dr. Grigoryev considers himself an outspoken critic of Western scientific community\'s practices.',
+      "Specializes in high-energy particle physics. Dr. Grigoryev considers himself an outspoken critic of Western scientific community's practices.",
     publications:
       'Known for his work on particle accelerators and energy fields.',
+  },
+  {
+    name: 'Dr. Linh Vu',
+    field: 'Quantum Physics',
+    affiliation: 'California Institute of Technology, United States',
+    background:
+      'Known for her research in quantum mechanics and the theoretical aspects of higher-dimensional spaces. Dr. Vu has contributed to studies on the intersection of quantum mechanics and cosmology.',
+    publications:
+      'Contributor to research on quantum gravity and the multiverse hypothesis.',
+  },
+  {
+    name: 'Dr. Jonathan Keller',
+    field: 'Astrobiology',
+    affiliation: 'Humboldt University of Berlin, Germany',
+    background:
+      'Dr. Keller has extensive experience in astrobiology, with a focus on the study of life in extreme environments and the search for extraterrestrial life.',
+    publications:
+      'Contributor to research on extremophiles and the potential for life in outer space.',
+  },
+  {
+    name: 'Dr. Andrea Lutz',
+    field: 'Bioethics',
+    affiliation: 'Sorbonne University, France',
+    background:
+      'Dr. Lutz is a prominent figure in bioethics, particularly in the ethical implications of animal research and biotechnological advancements.',
+    publications:
+      'Known for work on ethical considerations surrounding animal testing and biomedical ethics.',
+  },
+  {
+    name: 'Dr. Daniel Hanser',
+    field: 'Applied Physics',
+    affiliation: 'Sorbonne University, France',
+    background:
+      'Dr. Hanser holds a Ph.D. in Applied Physics. His research has been primarily theoretical, with a focus on unconventional ideas regarding the nature of anomalies and dimensional physics. Hanser has been criticized for disregarding scientific rigor, yet also praised as a disruptor',
+    publications: 'Known for self-published works and articles.',
   },
 ];
