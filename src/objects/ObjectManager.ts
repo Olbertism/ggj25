@@ -10,8 +10,8 @@ export class ObjectManager {
 
   constructor(private scene: Phaser.Scene) {}
 
-  createObject(x: number, y: number, texture: string, onInteract: () => void) {
-    const object = new InteractableObject(this.scene, x, y, texture);
+  createObject(x: number, y: number, texture: string, onInteract: () => void, scale?: number, isAnimated?: boolean) {
+    const object = new InteractableObject(this.scene, x, y, texture, scale, isAnimated);
     const { width, height } = object.getBounds();
     const rect = new Phaser.GameObjects.Rectangle(
       this.scene,
