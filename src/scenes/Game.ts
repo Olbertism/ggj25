@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
 import eventsCenter from './EventsCenter';
+import {Npc } from "../gameObjects/npc";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -18,6 +19,8 @@ export class Game extends Scene {
 
   private journalKey!: Phaser.Input.Keyboard.Key;
 
+  private npcGroup: Phaser.Physics.Arcade.StaticGroup;
+
   constructor() {
     super('Game');
   }
@@ -25,6 +28,7 @@ export class Game extends Scene {
   preload() {
     // Load assets
     //this.load.image('player', 'assets/player.png');
+    //player assets
     this.load.spritesheet('idleSheet', 'assets/player_new_idle_sprite.png', {
       frameWidth: 80,
       frameHeight: 120,
@@ -34,6 +38,12 @@ export class Game extends Scene {
       frameWidth: 90,
       frameHeight: 120,
     });
+
+    //npc assets:
+    this.load.spritesheet("npcIdle", "assets/new_police_idle_sprite.png", {
+      frameWidth: 80,
+      frameHeight: 120,
+  });
   }
 
   create() {
@@ -69,12 +79,29 @@ export class Game extends Scene {
     this.player = this.physics.add.sprite(400, 200, 'idleSheet');
     this.player.play('idle');
 
+    //npc sprites:
+    this.anims.create({
+      key: "npcIdle",
+      frames: this.anims.generateFrameNumbers("npcIdle", { frames: [0, 1, 2, 3,4,5,6,7,8,9] }),
+      frameRate: 2,
+      repeat: -1,
+  });
+
     // Add player to the scene
     //this.player = this.physics.add.sprite(400, 200, 'player');
     this.player.setScale(0.8);
     this.player.setCollideWorldBounds(true);
 
     this.camera.startFollow(this.player);
+
+    //add npcs to the sceene:
+     // Create NPC instances
+     this.npcGroup = this.physics.add.staticGroup();
+     const npc1 = new Npc(this, 300, 300, "npcIdle", "Guard", "npcIdle", 0.8);
+ 
+     // Add NPCs to a group for easier management
+     this.npcGroup.add(npc1);
+     //this.npcGroup.physics.add
 
     // Create an obstacle rectangle
     this.obstacle = this.add.rectangle(400, 450, 200, 50, 0xff0000); // Red rectangle
@@ -88,6 +115,8 @@ export class Game extends Scene {
       undefined,
       this,
     );
+    
+    this.physics.add.collider(this.player, this.npcGroup,  this.handleOverlap, undefined, this);
 
     // Set up input keys
     this.cursors = this.input.keyboard.createCursorKeys();
