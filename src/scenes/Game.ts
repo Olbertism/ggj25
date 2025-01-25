@@ -31,22 +31,53 @@ export class Game extends Scene {
 
   preload() {
     // Load assets
-    this.load.image('player', 'assets/player.png');
+    //this.load.image('player', 'assets/player.png');
+    this.load.spritesheet('idleSheet', 'assets/player_new_idle_sprite.png', {
+      frameWidth: 80,
+      frameHeight: 120,
+    });
+
+    this.load.spritesheet('walkSheet', 'assets/player_new_walk_sprite.png', {
+      frameWidth: 90,
+      frameHeight: 120,
+    });
   }
 
   create() {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
 
+    this.scene.run('JournalUi');
+    this.scene.run('KeyLegendUi');
+
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
 
-    this.scene.run('JournalUi');
-    this.scene.run('KeyLegendUi');
+    //player sprites
+    this.anims.create({
+      key: 'idle',
+      frames: this.anims.generateFrameNumbers('idleSheet', {
+        frames: [0, 1, 2, 3, 4, 5],
+      }),
+      frameRate: 5,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'walk',
+      frames: this.anims.generateFrameNumbers('walkSheet', {
+        frames: [0, 1, 2, 3, 4, 5],
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    this.player = this.physics.add.sprite(400, 200, 'idleSheet');
+    this.player.play('idle');
 
     // Add player to the scene
-    this.player = this.physics.add.sprite(400, 200, 'player');
+    //this.player = this.physics.add.sprite(400, 200, 'player');
     this.player.setScale(0.8);
     this.player.setCollideWorldBounds(true);
 
@@ -120,8 +151,10 @@ export class Game extends Scene {
     // Horizontal movement
     if (this.cursors.left?.isDown && !this.dialogBox.visible) {
       this.player.setVelocityX(-speed);
+      this.player.flipX = true;
     } else if (this.cursors.right?.isDown && !this.dialogBox.visible) {
       this.player.setVelocityX(speed);
+      this.player.flipX = false;
     }
 
     // Vertical movement
@@ -150,6 +183,20 @@ export class Game extends Scene {
     // If no longer overlapping, reset canInteract
     if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
       this.handleExitProximity();
+    }
+    if (
+      this.player.body?.velocity.x !== 0 ||
+      this.player.body?.velocity.y !== 0
+    ) {
+      // Player is moving
+      if (this.player.anims.currentAnim?.key !== 'walk') {
+        this.player.play('walk', true);
+      }
+    } else {
+      // Player is idle
+      if (this.player.anims.currentAnim?.key !== 'idle') {
+        this.player.play('idle', true);
+      }
     }
   }
 
@@ -197,6 +244,7 @@ export class Game extends Scene {
   }
 
   private createDialogBox() {
+    console.log('fgjhh');
     // Create a container for the dialog box
     this.dialogBox = this.add.container(400, 500);
 
