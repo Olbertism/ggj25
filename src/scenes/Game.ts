@@ -17,8 +17,6 @@ export class Game extends Scene {
   bubbleBody: Phaser.FX.Circle;
 
   private interactionKey!: Phaser.Input.Keyboard.Key;
-  private dialogBox: Phaser.GameObjects.Container;
-  private dialogText!: Phaser.GameObjects.Text;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
 
@@ -31,7 +29,6 @@ export class Game extends Scene {
 
   preload() {
     // Load assets
-    //this.load.image('player', 'assets/player.png');
     this.load.spritesheet('idleSheet', 'assets/player_new_idle_sprite.png', {
       frameWidth: 80,
       frameHeight: 120,
@@ -49,6 +46,7 @@ export class Game extends Scene {
 
     this.scene.run('JournalUi');
     this.scene.run('KeyLegendUi');
+    this.scene.run('InteractionUi');
 
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
@@ -116,10 +114,6 @@ export class Game extends Scene {
       Phaser.Input.Keyboard.KeyCodes.J,
     );
 
-    // Create dialog box and journal UI
-    this.createDialogBox();
-    this.dialogBox.setVisible(false);
-
     /* this.input.once('pointerdown', () => {
       this.scene.start('GameOver');
     }); */
@@ -141,26 +135,24 @@ export class Game extends Scene {
   update() {
     if (!this.cursors) return;
 
-    console.log(this.camera.x);
-
     const speed = 200;
 
     // Reset player velocity
     this.player.setVelocity(0);
 
     // Horizontal movement
-    if (this.cursors.left?.isDown && !this.dialogBox.visible) {
+    if (this.cursors.left?.isDown) {
       this.player.setVelocityX(-speed);
       this.player.flipX = true;
-    } else if (this.cursors.right?.isDown && !this.dialogBox.visible) {
+    } else if (this.cursors.right?.isDown) {
       this.player.setVelocityX(speed);
       this.player.flipX = false;
     }
 
     // Vertical movement
-    if (this.cursors.up?.isDown && !this.dialogBox.visible) {
+    if (this.cursors.up?.isDown) {
       this.player.setVelocityY(-speed);
-    } else if (this.cursors.down?.isDown && !this.dialogBox.visible) {
+    } else if (this.cursors.down?.isDown) {
       this.player.setVelocityY(speed);
     }
 
@@ -172,12 +164,11 @@ export class Game extends Scene {
       eventsCenter.emit('toggleJournal');
     }
 
-    // Check for interaction key press
     if (
       Phaser.Input.Keyboard.JustDown(this.interactionKey) &&
-      this.dialogBox.visible
+      this.canInteract
     ) {
-      this.closeDialog();
+      eventsCenter.emit('toggleInteraction', 'data');
     }
 
     // If no longer overlapping, reset canInteract
@@ -200,28 +191,12 @@ export class Game extends Scene {
     }
   }
 
-  private displayDialog(message: string) {
-    // Update the dialog text and show the dialog box
-    this.dialogText.setText(message);
-    this.dialogBox.setVisible(true);
-  }
-
-  private handleOverlap() {
-    // Show the dialog box when the player is near the obstacle
-    this.displayDialog("Hello! I'm just a placeholder rectangle.");
-  }
-
   private handleExitProximity() {
-    // Hide interaction hint and reset flag
-    // this.interactionHint?.setVisible(false);
     this.canInteract = false;
   }
 
   private handleProximity() {
     this.canInteract = true;
-
-    // Listen for the "E" key for interaction
-    this.input.keyboard.once('keydown-E', this.handleInteraction, this);
 
     // Optionally show a hint to the player
     this.add.text(
@@ -233,42 +208,5 @@ export class Game extends Scene {
         color: '#ffffff',
       },
     );
-  }
-
-  private handleInteraction() {
-    console.log(this.canInteract);
-    if (this.canInteract) {
-      console.log('EEEEEEE');
-      // this.scene.start('NewScene'); // Transition to a new scene
-    }
-  }
-
-  private createDialogBox() {
-    console.log('fgjhh');
-    // Create a container for the dialog box
-    this.dialogBox = this.add.container(400, 500);
-
-    // Create the background of the dialog box
-    const dialogBg = this.add
-      .rectangle(0, 0, 300, 100, 0x000000)
-      .setOrigin(0, 0);
-    dialogBg.setStrokeStyle(2, 0xffffff);
-
-    // Create the text for the dialog
-    this.dialogText = this.add
-      .text(0, 0, '', {
-        fontSize: '16px',
-        color: '#ffffff',
-        wordWrap: { width: 280 },
-      })
-      .setOrigin(0, 0);
-
-    // Add the background and text to the container
-    this.dialogBox.add([dialogBg, this.dialogText]);
-  }
-
-  private closeDialog() {
-    // Hide the dialog box
-    this.dialogBox.setVisible(false);
   }
 }
