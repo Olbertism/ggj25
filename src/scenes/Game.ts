@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
+import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
 import {Npc } from "../gameObjects/npc";
 
@@ -8,18 +9,25 @@ export class Game extends Scene {
   background: Phaser.GameObjects.Image;
   msg_text: Phaser.GameObjects.Text;
 
+  private objectManager: ObjectManager;
+
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
+  // private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
 
-  private interactionKey!: Phaser.Input.Keyboard.Key;
-  private dialogBox: Phaser.GameObjects.Container;
-  private dialogText!: Phaser.GameObjects.Text;
+  bubbleContainer: Phaser.GameObjects.Container;
+  bubbleZone: Phaser.GameObjects.Rectangle;
+  bubbleBody: Phaser.FX.Circle;
+
+  // private interactionKey!: Phaser.Input.Keyboard.Key;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
 
   private npcGroup: Phaser.Physics.Arcade.StaticGroup;
+
+  // isInteractionEnabled: boolean = false;
+  // canInteract: boolean = false;
 
   constructor() {
     super('Game');
@@ -27,8 +35,6 @@ export class Game extends Scene {
 
   preload() {
     // Load assets
-    //this.load.image('player', 'assets/player.png');
-    //player assets
     this.load.spritesheet('idleSheet', 'assets/player_new_idle_sprite.png', {
       frameWidth: 80,
       frameHeight: 120,
@@ -52,10 +58,16 @@ export class Game extends Scene {
 
     this.scene.run('JournalUi');
     this.scene.run('KeyLegendUi');
+    this.scene.run('InteractionUi');
 
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
+
+    // Initialize ObjectManager
+    this.objectManager = new ObjectManager(this);
+
+    console.log('inited');
 
     //player sprites
     this.anims.create({
@@ -103,18 +115,15 @@ export class Game extends Scene {
      this.npcGroup.add(npc1);
      //this.npcGroup.physics.add
 
-    // Create an obstacle rectangle
-    this.obstacle = this.add.rectangle(400, 450, 200, 50, 0xff0000); // Red rectangle
-    this.physics.add.existing(this.obstacle, true); // Add physics to the rectangle
-
-    // Add collision between the player and the obstacle
-    this.physics.add.collider(
-      this.player,
-      this.obstacle,
-      this.handleOverlap,
-      undefined,
-      this,
-    );
+    // Add objects using ObjectManager
+    this.objectManager.createObject(200, 150, 'object', () => {
+      console.log('Interacted with object at (200, 150)!');
+      eventsCenter.emit('toggleInteraction', this);
+    });
+    /*
+    this.objectManager.createObject(300, 250, 'object', () => {
+      console.log('Interacted with object at (300, 250)!');
+    }); */
     
     this.physics.add.collider(this.player, this.npcGroup,  this.handleOverlap, undefined, this);
 
@@ -127,17 +136,29 @@ export class Game extends Scene {
       Phaser.Input.Keyboard.KeyCodes.J,
     );
 
-    // Create dialog box and journal UI
-    this.createDialogBox();
-    this.dialogBox.setVisible(false);
-
     /* this.input.once('pointerdown', () => {
       this.scene.start('GameOver');
     }); */
+
+    this.bubbleContainer = this.add.container(620, 580);
+    this.bubbleZone = this.add
+      .rectangle(620, 580, 160, 200)
+      .setStrokeStyle(2, 0xfff000);
+    this.bubbleContainer.add(this.bubbleZone);
+
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      const worldX = pointer.worldX;
+      const worldY = pointer.worldY;
+
+      console.log(`Clicked at world position: x: ${worldX}, y: ${worldY}`);
+    });
   }
 
   update() {
     if (!this.cursors) return;
+
+    // Update objects
+    this.objectManager.update();
 
     const speed = 200;
 
@@ -145,18 +166,18 @@ export class Game extends Scene {
     this.player.setVelocity(0);
 
     // Horizontal movement
-    if (this.cursors.left?.isDown && !this.dialogBox.visible) {
+    if (this.cursors.left?.isDown) {
       this.player.setVelocityX(-speed);
       this.player.flipX = true;
-    } else if (this.cursors.right?.isDown && !this.dialogBox.visible) {
+    } else if (this.cursors.right?.isDown) {
       this.player.setVelocityX(speed);
       this.player.flipX = false;
     }
 
     // Vertical movement
-    if (this.cursors.up?.isDown && !this.dialogBox.visible) {
+    if (this.cursors.up?.isDown) {
       this.player.setVelocityY(-speed);
-    } else if (this.cursors.down?.isDown && !this.dialogBox.visible) {
+    } else if (this.cursors.down?.isDown) {
       this.player.setVelocityY(speed);
     }
 
@@ -165,19 +186,20 @@ export class Game extends Scene {
 
     // Toggle journal visibility
     if (Phaser.Input.Keyboard.JustDown(this.journalKey)) {
-      console.log('journal key');
-      // this.events.emit('toggleJournal');
       eventsCenter.emit('toggleJournal');
-      // this.toggleJournal();
     }
 
-    // Check for interaction key press
-    if (
+    /*     if (
       Phaser.Input.Keyboard.JustDown(this.interactionKey) &&
-      this.dialogBox.visible
+      this.canInteract
     ) {
-      this.closeDialog();
-    }
+      eventsCenter.emit('toggleInteraction', 'data');
+    } */
+
+    // If no longer overlapping, reset canInteract
+    /* if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
+      this.handleExitProximity();
+    } */
     if (
       this.player.body?.velocity.x !== 0 ||
       this.player.body?.velocity.y !== 0
@@ -194,43 +216,22 @@ export class Game extends Scene {
     }
   }
 
-  private displayDialog(message: string) {
-    // Update the dialog text and show the dialog box
-    this.dialogText.setText(message);
-    this.dialogBox.setVisible(true);
+  /* private handleExitProximity() {
+    this.canInteract = false;
   }
 
-  private handleOverlap() {
-    // Show the dialog box when the player is near the obstacle
-    this.displayDialog("Hello! I'm just a placeholder rectangle.");
-  }
+  private handleProximity() {
+    this.canInteract = true;
 
-  private createDialogBox() {
-    console.log('fgjhh');
-    // Create a container for the dialog box
-    this.dialogBox = this.add.container(400, 500);
-
-    // Create the background of the dialog box
-    const dialogBg = this.add
-      .rectangle(0, 0, 300, 100, 0x000000)
-      .setOrigin(0, 0);
-    dialogBg.setStrokeStyle(2, 0xffffff);
-
-    // Create the text for the dialog
-    this.dialogText = this.add
-      .text(0, 0, '', {
-        fontSize: '16px',
+    // Optionally show a hint to the player
+    this.add.text(
+      this.obstacle.x,
+      this.obstacle.y - 20,
+      'Press E to interact',
+      {
+        fontSize: '12px',
         color: '#ffffff',
-        wordWrap: { width: 280 },
-      })
-      .setOrigin(0, 0);
-
-    // Add the background and text to the container
-    this.dialogBox.add([dialogBg, this.dialogText]);
-  }
-
-  private closeDialog() {
-    // Hide the dialog box
-    this.dialogBox.setVisible(false);
-  }
+      },
+    );
+  } */
 }
