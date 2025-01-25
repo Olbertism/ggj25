@@ -1,5 +1,6 @@
 import eventsCenter from "../scenes/EventsCenter.ts";
 import {Scene} from "phaser";
+import {actionObject} from "../data/store.ts";
 
 export class ActionHandler {
     private totalScore : number;
@@ -10,12 +11,12 @@ export class ActionHandler {
     constructor() {
         this.totalScore = 0; // Initialize totalScore
         this.actionsTaken = []; // Initialize actionsTaken
-        this.maxActions = 1//Math.floor(Math.random() * (Math.floor(11) - Math.ceil(8)) + Math.ceil(8));
+        this.maxActions = Math.floor(Math.random() * (Math.floor(11) - Math.ceil(8)) + Math.ceil(8));
 
         eventsCenter.on('action-event', this.handleAction , this)
     }
 
-    handleAction(action: Action) {
+    handleAction(action: actionObject) {
         const points = Math.floor(
                 Math.random() * (Math.floor(action.pointRange[1]) - Math.ceil(action.pointRange[0])) + Math.ceil(action.pointRange[0])
         );
@@ -24,6 +25,7 @@ export class ActionHandler {
             key: action.key,
             label: action.label,
             points: points,
+            repeatable: action.repeatable
         })
 
         if (this.actionsTaken.length === this.maxActions) {
@@ -39,11 +41,4 @@ export class ActionHandler {
     getTotalPoints() {
         return this.totalScore;
     }
-}
-
-interface Action {
-    key: string,
-    label: string,
-    pointRange: [number, number],
-    effect: string,
 }

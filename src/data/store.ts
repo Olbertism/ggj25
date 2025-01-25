@@ -6,19 +6,21 @@ export const bubbleData: basicDataObject = {
       key: 'step-into-bubble',
       label: 'Step into the bubble',
       pointRange: [],
-      effect: '',
+      effect: 'Test',
     },
     {
       key: 'take-measurements',
       label: 'Take measurements',
       pointRange: [],
       effect: '',
+      repeatable: true,
     },
     {
       key: 'sample-soil',
       label: 'Take soil sample next to the bubble',
       pointRange: [],
       effect: '',
+      repeatable: true,
     },
     {
       key: 'throw-rock',
@@ -173,6 +175,7 @@ export interface actionObject {
   pointRange: number[];
   effect: string;
   leadsTo?: string;
+  repeatable?: boolean;
 }
 
 export const journalReports = [

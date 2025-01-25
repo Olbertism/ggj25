@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
-import { bubbleData } from '../data/store';
+import {bubbleData, cameraData} from '../data/store';
 import { MapObstacles } from '../gameObjects/MapObstacles.ts';
 import { Npc } from '../gameObjects/Npc';
 import { ActionHandler } from '../objects/ActionHandler.ts';
@@ -167,7 +167,6 @@ export class Game extends Scene {
        repeat: -1,
      });
 
-
     //cat sprites
     this.anims.create({
       key: 'catIdle',
@@ -194,7 +193,7 @@ export class Game extends Scene {
 
     this.movementEnabled = true;
 
-    //add npcs to the sceene:
+    //add npcs to the scene:
     // Create NPC instances
     this.npcGroup = this.physics.add.staticGroup();
     const npc1 = new Npc(
@@ -246,11 +245,12 @@ export class Game extends Scene {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     }, 1, true);
+    // .preFX?.addGlow(0x8a1adb)
 
     // Camera
     this.objectManager.createObject(1500, 1400, 'camera', () => {
       console.log('Interacted with camera at (1500, 1400)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
+      eventsCenter.emit('toggleInteraction', cameraData);
     });
 
     // Old man
