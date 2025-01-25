@@ -65,6 +65,12 @@ export class Game extends Scene {
       frameHeight: 120,
     });
 
+    //bubble:
+    this.load.spritesheet('bubble', 'assets/bubble_sprite.png', {
+      frameWidth:256,
+      frameHeight: 280,
+    });
+
     //cat assets:
     this.load.spritesheet('catIdle', 'assets/cat_idle_sprite.png', {
       frameWidth: 42,
@@ -141,6 +147,17 @@ export class Game extends Scene {
       repeat: -1,
     });
 
+    //bubble
+     this.anims.create({
+       key: 'bubble',
+       frames: this.anims.generateFrameNumbers('bubble', {
+         frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+       }),
+       frameRate: 4,
+       repeat: -1,
+     });
+
+
     //cat sprites
     this.anims.create({
       key: 'catIdle',
@@ -215,7 +232,7 @@ export class Game extends Scene {
     this.objectManager.createObject(1230, 1100, 'bubble', () => {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
-    });
+    }, 1, true);
 
     // Camera
     this.objectManager.createObject(1500, 1400, 'camera', () => {
@@ -242,7 +259,7 @@ export class Game extends Scene {
     }, 1.5);
 
     // Lab Rat
-    this.objectManager.createObject(490, 1350, 'lab-rat', () => {
+    this.objectManager.createObject(515, 1500, 'lab-rat', () => {
       console.log('Interacted with lab rat at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     });
