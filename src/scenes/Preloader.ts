@@ -27,7 +27,7 @@ export class Preloader extends Scene {
     this.load.setPath('assets');
 
     this.load.image('logo', 'logo.png');
-    this.load.image('bubble', 'bubble.png');
+    //this.load.image('bubble', 'bubble.png');
     this.load.image('camera', 'camera.png');
     this.load.image('lab-rat', 'rat.png');
     this.load.image('lamp', 'lamp.png');
