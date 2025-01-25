@@ -1,10 +1,11 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
 import { bubbleData } from '../data/store';
+import { MapObstacles } from '../gameObjects/MapObstacles.ts';
 import { Npc } from '../gameObjects/Npc';
+import { ActionHandler } from '../objects/ActionHandler.ts';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
-import { MapObstacles } from './MapObstacles.ts';
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -12,6 +13,7 @@ export class Game extends Scene {
   msg_text: Phaser.GameObjects.Text;
 
   private objectManager: ObjectManager;
+  private actionHandler: ActionHandler;
 
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -32,7 +34,7 @@ export class Game extends Scene {
   private mapObstacles: MapObstacles;
   private obstacleGroup: Phaser.GameObjects.Group;
 
-  movementEnabled: boolean = true; // Flag to enable/disable input
+  movementEnabled: boolean; // Flag to enable/disable input
 
   constructor() {
     super('Game');
@@ -56,6 +58,21 @@ export class Game extends Scene {
       frameHeight: 120,
     });
 
+    this.load.spritesheet('oldManIdle', 'assets/old_guy_idle.png', {
+      frameWidth: 90,
+      frameHeight: 125,
+    });
+    this.load.spritesheet('oldWomanIdle', 'assets/old_woman_idle.png', {
+      frameWidth: 90,
+      frameHeight: 120,
+    });
+
+    //bubble:
+    this.load.spritesheet('bubble', 'assets/bubble_sprite.png', {
+      frameWidth:256,
+      frameHeight: 280,
+    });
+
     //cat assets:
     this.load.spritesheet('catIdle', 'assets/cat_idle_sprite.png', {
       frameWidth: 42,
@@ -68,6 +85,13 @@ export class Game extends Scene {
   }
 
   create() {
+    // Create ActionHandler and store it in the registry if it doesn't exist
+    if (!this.registry.has('actionHandler')) {
+      this.registry.set('actionHandler', new ActionHandler());
+    }
+
+    const actionHandler: ActionHandler = this.registry.get('actionHandler');
+
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
 
@@ -81,6 +105,7 @@ export class Game extends Scene {
 
     // Initialize ObjectManager
     this.objectManager = new ObjectManager(this);
+    this.actionHandler = new ActionHandler();
 
     //player sprites
     this.anims.create({
@@ -114,6 +139,35 @@ export class Game extends Scene {
       repeat: -1,
     });
 
+    this.anims.create({
+      key: 'oldManIdle',
+      frames: this.anims.generateFrameNumbers('oldManIdle', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      }),
+      frameRate: 2,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'oldWomanIdle',
+      frames: this.anims.generateFrameNumbers('oldWomanIdle', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      }),
+      frameRate: 2,
+      repeat: -1,
+    });
+
+    //bubble
+     this.anims.create({
+       key: 'bubble',
+       frames: this.anims.generateFrameNumbers('bubble', {
+         frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+       }),
+       frameRate: 4,
+       repeat: -1,
+     });
+
+
     //cat sprites
     this.anims.create({
       key: 'catIdle',
@@ -137,6 +191,8 @@ export class Game extends Scene {
     this.player.setCollideWorldBounds(true);
 
     this.camera.startFollow(this.player);
+
+    this.movementEnabled = true;
 
     //add npcs to the sceene:
     // Create NPC instances
@@ -171,6 +227,7 @@ export class Game extends Scene {
     this.add.existing(cat);
     this.physics.add.existing(cat);
 
+     // add bounding boxes for map objects
     this.mapObstacles = new MapObstacles(this);
     this.obstacleGroup = this.mapObstacles.createObstacles();
 
@@ -188,7 +245,7 @@ export class Game extends Scene {
     this.objectManager.createObject(1230, 1100, 'bubble', () => {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
-    });
+    }, 1, true);
 
     // Camera
     this.objectManager.createObject(1500, 1400, 'camera', () => {
@@ -209,13 +266,13 @@ export class Game extends Scene {
     });
 
     // Ray installation
-    this.objectManager.createObject(800, 1000, 'rays', () => {
+    this.objectManager.createObject(800, 1000, 'lamp', () => {
       console.log('Interacted with rays at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
-    });
+    }, 1.5);
 
     // Lab Rat
-    this.objectManager.createObject(490, 1350, 'lab-rat', () => {
+    this.objectManager.createObject(515, 1500, 'lab-rat', () => {
       console.log('Interacted with lab rat at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     });
@@ -250,6 +307,31 @@ export class Game extends Scene {
       },
       0.8,
       true,
+      true
+    );
+    //oldman
+    this.objectManager.createObject(
+      1150,
+      630,
+      'oldManIdle',
+      () => {
+        console.log('Interacted with guard at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      0.9,
+      true
+    );
+//old woman
+    this.objectManager.createObject(
+      1260,
+      630,
+      'oldWomanIdle',
+      () => {
+        console.log('Interacted with guard at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      0.9,
+      true
     );
 
     this.physics.add.collider(
@@ -275,10 +357,6 @@ export class Game extends Scene {
       this.dKey = this.input.keyboard.addKey('d');
     }
 
-    /* this.input.once('pointerdown', () => {
-      this.scene.start('GameOver');
-    }); */
-
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const worldX = pointer.worldX;
       const worldY = pointer.worldY;
@@ -294,6 +372,14 @@ export class Game extends Scene {
     eventsCenter.on('enableMovement', () => {
       this.movementEnabled = true;
     });
+
+    eventsCenter.on('gameOver', () => {
+      this.scene.stop('Game');
+      this.scene.stop('InteractionUi');
+      this.scene.stop('JournalUi');
+      this.scene.stop('KeyLegendUi');
+      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), totalPoints: this.actionHandler.getTotalPoints()});
+    })
   }
 
   update() {
