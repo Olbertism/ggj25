@@ -45,7 +45,7 @@ export class InteractionUi extends Scene {
   }
 
   private toggleInteraction(data) {
-    console.log('toggle');
+    console.log('toggle', data);
     if (this.isInteractionOpen) {
       console.log('close');
       // Close
@@ -54,7 +54,7 @@ export class InteractionUi extends Scene {
     } else {
       console.log('open');
       // Open
-      this.uiText.setText(data);
+      this.uiText.setText('data');
       this.uiBox.setVisible(true);
       this.isInteractionOpen = true;
     }

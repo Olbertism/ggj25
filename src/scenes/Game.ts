@@ -1,11 +1,14 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
+import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
   background: Phaser.GameObjects.Image;
   msg_text: Phaser.GameObjects.Text;
+
+  private objectManager: ObjectManager;
 
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -51,6 +54,11 @@ export class Game extends Scene {
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
+
+    // Initialize ObjectManager
+    this.objectManager = new ObjectManager(this);
+
+    console.log('inited');
 
     //player sprites
     this.anims.create({
@@ -105,6 +113,17 @@ export class Game extends Scene {
       this,
     );
 
+    // Add objects using ObjectManager
+    this.objectManager.createObject(200, 150, 'object', () => {
+      console.log('Interacted with object at (200, 150)!');
+
+      eventsCenter.emit('toggleInteraction', this);
+    });
+    /*
+    this.objectManager.createObject(300, 250, 'object', () => {
+      console.log('Interacted with object at (300, 250)!');
+    }); */
+
     // Set up input keys
     this.cursors = this.input.keyboard.createCursorKeys();
     this.interactionKey = this.input.keyboard.addKey(
@@ -134,6 +153,9 @@ export class Game extends Scene {
 
   update() {
     if (!this.cursors) return;
+
+    // Update objects
+    this.objectManager.update();
 
     const speed = 200;
 
