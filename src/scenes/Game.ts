@@ -1,10 +1,10 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
 import { bubbleData } from '../data/store';
+import { Npc } from '../gameObjects/Npc';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
-import {Npc } from "../gameObjects/Npc";
-import {MapObstacles} from "./MapObstacles.ts";
+import { MapObstacles } from './MapObstacles.ts';
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -51,17 +51,17 @@ export class Game extends Scene {
     });
 
     //npc assets:
-    this.load.spritesheet("npcIdle", "assets/new_police_idle_sprite.png", {
+    this.load.spritesheet('npcIdle', 'assets/new_police_idle_sprite.png', {
       frameWidth: 80,
       frameHeight: 120,
-  });
+    });
 
-  //cat assets:
-    this.load.spritesheet("catIdle", "assets/cat_idle_sprite.png", {
+    //cat assets:
+    this.load.spritesheet('catIdle', 'assets/cat_idle_sprite.png', {
       frameWidth: 42,
       frameHeight: 38,
-   });
-    this.load.spritesheet("catWalk", "assets/cat_new_walk_sprite.png", {
+    });
+    this.load.spritesheet('catWalk', 'assets/cat_new_walk_sprite.png', {
       frameWidth: 42,
       frameHeight: 38,
     });
@@ -103,28 +103,34 @@ export class Game extends Scene {
       repeat: -1,
     });
 
-    this.player = this.physics.add.sprite(400, 200, 'idleSheet');
+    this.player = this.physics.add.sprite(1200, 600, 'idleSheet');
     this.player.play('idle');
 
     //npc sprites:
     this.anims.create({
-      key: "npcIdle",
-      frames: this.anims.generateFrameNumbers("npcIdle", { frames: [0, 1, 2, 3,4,5,6,7,8,9] }),
+      key: 'npcIdle',
+      frames: this.anims.generateFrameNumbers('npcIdle', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      }),
       frameRate: 2,
       repeat: -1,
-  });
+    });
 
-      //cat sprites
+    //cat sprites
     this.anims.create({
-        key: "catIdle",
-        frames: this.anims.generateFrameNumbers("catIdle", { frames: [0, 1, 2, 3,4,5,6,7,8] }),
-        frameRate: 4,
-        repeat: -1,
+      key: 'catIdle',
+      frames: this.anims.generateFrameNumbers('catIdle', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      }),
+      frameRate: 4,
+      repeat: -1,
     });
 
     this.anims.create({
-      key: "catWalk",
-      frames: this.anims.generateFrameNumbers("catWalk", { frames: [0, 1, 2, 3,4,5] }),
+      key: 'catWalk',
+      frames: this.anims.generateFrameNumbers('catWalk', {
+        frames: [0, 1, 2, 3, 4, 5],
+      }),
       frameRate: 4,
       repeat: -1,
     });
@@ -137,19 +143,37 @@ export class Game extends Scene {
     this.camera.startFollow(this.player);
 
     //add npcs to the sceene:
-     // Create NPC instances
-     this.npcGroup = this.physics.add.staticGroup();
-     const npc1 = new Npc(this, 300, 300, "npcIdle", "Guard", 0.8, "npcIdle", "", false);
-     const cat = new Npc(this, 500, 700, "catIdle", "cat",1.5, "catIdle", "catWalk", true);
- 
-     // Add NPCs to a group for easier management
-     this.npcGroup.add(npc1);
-     
+    // Create NPC instances
+    this.npcGroup = this.physics.add.staticGroup();
+    const npc1 = new Npc(
+      this,
+      300,
+      300,
+      'npcIdle',
+      'Guard',
+      0.8,
+      'npcIdle',
+      '',
+      false,
+    );
+    const cat = new Npc(
+      this,
+      500,
+      700,
+      'catIdle',
+      'cat',
+      1.5,
+      'catIdle',
+      'catWalk',
+      true,
+    );
 
-     //ad cat to scene:
-     this.add.existing(cat);
-     this.physics.add.existing(cat);
+    // Add NPCs to a group for easier management
+    this.npcGroup.add(npc1);
 
+    //ad cat to scene:
+    this.add.existing(cat);
+    this.physics.add.existing(cat);
 
     this.mapObstacles = new MapObstacles(this);
     this.obstacleGroup = this.mapObstacles.createObstacles();
@@ -173,22 +197,28 @@ export class Game extends Scene {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     });
-    
-    this.physics.add.collider(this.player, this.npcGroup,  undefined, undefined, this);
-    this.physics.add.collider(this.player, cat,  undefined, undefined, this);
-    this.physics.add.collider(npc1, cat,  undefined, undefined, this);
-    this.physics.add.collider(cat, this.player,  undefined, undefined, this);
+
+    this.physics.add.collider(
+      this.player,
+      this.npcGroup,
+      undefined,
+      undefined,
+      this,
+    );
+    this.physics.add.collider(this.player, cat, undefined, undefined, this);
+    this.physics.add.collider(npc1, cat, undefined, undefined, this);
+    this.physics.add.collider(cat, this.player, undefined, undefined, this);
 
     // Set up input keys
-    if( this.input.keyboard != null) {
+    if (this.input.keyboard != null) {
       this.cursors = this.input.keyboard.createCursorKeys();
       this.journalKey = this.input.keyboard.addKey(
-          Phaser.Input.Keyboard.KeyCodes.J,
+        Phaser.Input.Keyboard.KeyCodes.J,
       );
-      this.wKey = this.input.keyboard.addKey("w");
-      this.sKey = this.input.keyboard.addKey("s");
-      this.aKey = this.input.keyboard.addKey("a");
-      this.dKey = this.input.keyboard.addKey("d");
+      this.wKey = this.input.keyboard.addKey('w');
+      this.sKey = this.input.keyboard.addKey('s');
+      this.aKey = this.input.keyboard.addKey('a');
+      this.dKey = this.input.keyboard.addKey('d');
     }
 
     /* this.input.once('pointerdown', () => {
@@ -223,7 +253,7 @@ export class Game extends Scene {
     // Update objects
     this.objectManager.update();
 
-    const speed = 200;
+    const speed = 250;
 
     // Reset player velocity
     this.player.setVelocity(0);
