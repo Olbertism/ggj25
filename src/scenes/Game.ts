@@ -3,6 +3,7 @@ import { background } from '../commons';
 import { bubbleData } from '../data/store';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
+import {Npc } from "../gameObjects/Npc";
 import {MapObstacles} from "./MapObstacles.ts";
 
 export class Game extends Scene {
@@ -20,6 +21,9 @@ export class Game extends Scene {
   bubbleBody: Phaser.FX.Circle;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
+
+  private npcGroup: Phaser.Physics.Arcade.StaticGroup;
+
   private wKey!: Phaser.Input.Keyboard.Key;
   private sKey!: Phaser.Input.Keyboard.Key;
   private aKey!: Phaser.Input.Keyboard.Key;
@@ -44,6 +48,22 @@ export class Game extends Scene {
     this.load.spritesheet('walkSheet', 'assets/player_new_walk_sprite.png', {
       frameWidth: 90,
       frameHeight: 120,
+    });
+
+    //npc assets:
+    this.load.spritesheet("npcIdle", "assets/new_police_idle_sprite.png", {
+      frameWidth: 80,
+      frameHeight: 120,
+  });
+
+  //cat assets:
+    this.load.spritesheet("catIdle", "assets/cat_idle_sprite.png", {
+      frameWidth: 42,
+      frameHeight: 38,
+   });
+    this.load.spritesheet("catWalk", "assets/cat_new_walk_sprite.png", {
+      frameWidth: 42,
+      frameHeight: 38,
     });
   }
 
@@ -86,12 +106,49 @@ export class Game extends Scene {
     this.player = this.physics.add.sprite(400, 200, 'idleSheet');
     this.player.play('idle');
 
+    //npc sprites:
+    this.anims.create({
+      key: "npcIdle",
+      frames: this.anims.generateFrameNumbers("npcIdle", { frames: [0, 1, 2, 3,4,5,6,7,8,9] }),
+      frameRate: 2,
+      repeat: -1,
+  });
+
+      //cat sprites
+    this.anims.create({
+        key: "catIdle",
+        frames: this.anims.generateFrameNumbers("catIdle", { frames: [0, 1, 2, 3,4,5,6,7,8] }),
+        frameRate: 4,
+        repeat: -1,
+    });
+
+    this.anims.create({
+      key: "catWalk",
+      frames: this.anims.generateFrameNumbers("catWalk", { frames: [0, 1, 2, 3,4,5] }),
+      frameRate: 4,
+      repeat: -1,
+    });
+
     // Add player to the scene
     //this.player = this.physics.add.sprite(400, 200, 'player');
     this.player.setScale(0.8);
     this.player.setCollideWorldBounds(true);
 
     this.camera.startFollow(this.player);
+
+    //add npcs to the sceene:
+     // Create NPC instances
+     this.npcGroup = this.physics.add.staticGroup();
+     const npc1 = new Npc(this, 300, 300, "npcIdle", "Guard", 0.8, "npcIdle", "", false);
+     const cat = new Npc(this, 500, 700, "catIdle", "cat",1.5, "catIdle", "catWalk", true);
+ 
+     // Add NPCs to a group for easier management
+     this.npcGroup.add(npc1);
+     
+
+     //ad cat to scene:
+     this.add.existing(cat);
+     this.physics.add.existing(cat);
 
 
     this.mapObstacles = new MapObstacles(this);
@@ -116,6 +173,11 @@ export class Game extends Scene {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     });
+    
+    this.physics.add.collider(this.player, this.npcGroup,  undefined, undefined, this);
+    this.physics.add.collider(this.player, cat,  undefined, undefined, this);
+    this.physics.add.collider(npc1, cat,  undefined, undefined, this);
+    this.physics.add.collider(cat, this.player,  undefined, undefined, this);
 
     // Set up input keys
     if( this.input.keyboard != null) {
