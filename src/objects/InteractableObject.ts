@@ -4,20 +4,34 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
   private interactionHint: Phaser.GameObjects.Text;
   private canInteract: boolean = false;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, texture: string) {
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    texture: string,
+    scale?: number,
+    isAnimated?: boolean,
+  ) {
     super(scene, x, y, texture);
+
+    scale && this.setScale(scale);
+
+    //isAnimated && this.play(texture, true);
+    // isAnimated && scene.add.sprite(x, y, texture).play('run');
 
     // Add the object to the scene
     scene.add.existing(this);
     scene.physics.add.existing(this, true);
+    isAnimated && this.play(texture, true);
 
     scene.physics.add.collider(scene.player, this, undefined, undefined, scene);
 
     // Create an interaction hint
     this.interactionHint = scene.add
-      .text(x, y - 20, 'Press E to interact', {
-        fontSize: '12px',
+      .text(x - 40, y - 10, 'Press E to interact', {
+        fontSize: '20px',
         color: '#ffffff',
+        backgroundColor: 'grey',
       })
       .setVisible(false);
   }

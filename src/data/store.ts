@@ -7,3 +7,8 @@ export const bubbleData = {
   ],
 } as const;
 
+export interface basicDataObject {
+  title: string;
+  message: string;
+  actions: Record<string, any>[];
+}

@@ -1,10 +1,10 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
 import { bubbleData } from '../data/store';
+import { Npc } from '../gameObjects/Npc';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
-import {Npc } from "../gameObjects/Npc";
-import {MapObstacles} from "../gameObjects/MapObstacles.ts";
+import { MapObstacles } from './MapObstacles.ts';
 import {ActionHandler} from "../objects/ActionHandler.ts";
 
 export class Game extends Scene {
@@ -36,8 +36,6 @@ export class Game extends Scene {
 
   movementEnabled: boolean = true; // Flag to enable/disable input
 
-  private availableActionNum : integer;
-
   constructor() {
     super('Game');
   }
@@ -55,17 +53,17 @@ export class Game extends Scene {
     });
 
     //npc assets:
-    this.load.spritesheet("npcIdle", "assets/new_police_idle_sprite.png", {
+    this.load.spritesheet('npcIdle', 'assets/new_police_idle_sprite.png', {
       frameWidth: 80,
       frameHeight: 120,
-  });
+    });
 
-  //cat assets:
-    this.load.spritesheet("catIdle", "assets/cat_idle_sprite.png", {
+    //cat assets:
+    this.load.spritesheet('catIdle', 'assets/cat_idle_sprite.png', {
       frameWidth: 42,
       frameHeight: 38,
-   });
-    this.load.spritesheet("catWalk", "assets/cat_new_walk_sprite.png", {
+    });
+    this.load.spritesheet('catWalk', 'assets/cat_new_walk_sprite.png', {
       frameWidth: 42,
       frameHeight: 38,
     });
@@ -87,8 +85,6 @@ export class Game extends Scene {
     this.objectManager = new ObjectManager(this);
     this.actionHandler = new ActionHandler();
 
-    console.log('inited');
-
     //player sprites
     this.anims.create({
       key: 'idle',
@@ -108,51 +104,75 @@ export class Game extends Scene {
       repeat: -1,
     });
 
-    this.player = this.physics.add.sprite(400, 200, 'idleSheet');
+    this.player = this.physics.add.sprite(850, 850, 'idleSheet');
     this.player.play('idle');
 
     //npc sprites:
     this.anims.create({
-      key: "npcIdle",
-      frames: this.anims.generateFrameNumbers("npcIdle", { frames: [0, 1, 2, 3,4,5,6,7,8,9] }),
+      key: 'npcIdle',
+      frames: this.anims.generateFrameNumbers('npcIdle', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      }),
       frameRate: 2,
       repeat: -1,
-  });
-
-      //cat sprites
-    this.anims.create({
-        key: "catIdle",
-        frames: this.anims.generateFrameNumbers("catIdle", { frames: [0, 1, 2, 3,4,5,6,7,8] }),
-        frameRate: 4,
-        repeat: -1,
     });
 
+    //cat sprites
     this.anims.create({
-      key: "catWalk",
-      frames: this.anims.generateFrameNumbers("catWalk", { frames: [0, 1, 2, 3,4,5] }),
+      key: 'catIdle',
+      frames: this.anims.generateFrameNumbers('catIdle', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      }),
       frameRate: 4,
       repeat: -1,
     });
 
-    // Add player to the scene
-    //this.player = this.physics.add.sprite(400, 200, 'player');
+    this.anims.create({
+      key: 'catWalk',
+      frames: this.anims.generateFrameNumbers('catWalk', {
+        frames: [0, 1, 2, 3, 4, 5],
+      }),
+      frameRate: 4,
+      repeat: -1,
+    });
+
     this.player.setScale(0.8);
     this.player.setCollideWorldBounds(true);
 
     this.camera.startFollow(this.player);
 
     //add npcs to the sceene:
-     // Create NPC instances
-     this.npcGroup = this.physics.add.staticGroup();
-     const npc1 = new Npc(this, 300, 300, "npcIdle", "Guard", 0.8, "npcIdle", "", false);
-     const cat = new Npc(this, 500, 700, "catIdle", "cat",1.5, "catIdle", "catWalk", true);
- 
-     // Add NPCs to a group for easier management
-     this.npcGroup.add(npc1);
+    // Create NPC instances
+    this.npcGroup = this.physics.add.staticGroup();
+    const npc1 = new Npc(
+      this,
+      300,
+      300,
+      'npcIdle',
+      'Guard',
+      0.8,
+      'npcIdle',
+      '',
+      false,
+    );
+    const cat = new Npc(
+      this,
+      500,
+      700,
+      'catIdle',
+      'cat',
+      1.5,
+      'catIdle',
+      'catWalk',
+      true,
+    );
 
-     //ad cat to scene:
-     this.add.existing(cat);
-     this.physics.add.existing(cat);
+    // Add NPCs to a group for easier management
+    this.npcGroup.add(npc1);
+
+    //ad cat to scene:
+    this.add.existing(cat);
+    this.physics.add.existing(cat);
 
      // add bounding boxes for map objects
     this.mapObstacles = new MapObstacles(this);
@@ -166,33 +186,95 @@ export class Game extends Scene {
       this,
     );
 
-    // Add objects using ObjectManager
-    this.objectManager.createObject(200, 150, 'object', () => {
-      console.log('Interacted with object at (200, 150)!');
-      eventsCenter.emit('toggleInteraction', this);
-    });
+    // ### Interactable objects ####
 
-    // Create bubble
+    // Bubble
     this.objectManager.createObject(1230, 1100, 'bubble', () => {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     });
-    
-    this.physics.add.collider(this.player, this.npcGroup,  undefined, undefined, this);
-    this.physics.add.collider(this.player, cat,  undefined, undefined, this);
-    this.physics.add.collider(npc1, cat,  undefined, undefined, this);
-    this.physics.add.collider(cat, this.player,  undefined, undefined, this);
+
+    // Camera
+    this.objectManager.createObject(1500, 1400, 'camera', () => {
+      console.log('Interacted with camera at (1500, 1400)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Old man
+    this.objectManager.createObject(1260, 630, 'old-man', () => {
+      console.log('Interacted with old man at (1230, 1100)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Old woman
+    this.objectManager.createObject(1150, 630, 'old-woman', () => {
+      console.log('Interacted with old woman at (1230, 1100)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Ray installation
+    this.objectManager.createObject(800, 1000, 'rays', () => {
+      console.log('Interacted with rays at (800, 1000)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Lab Rat
+    this.objectManager.createObject(490, 1350, 'lab-rat', () => {
+      console.log('Interacted with lab rat at (800, 1000)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Computer
+    this.objectManager.createObject(570, 1350, 'computer', () => {
+      console.log('Interacted with computer at (800, 1000)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Guard 1
+    this.objectManager.createObject(
+      570,
+      460,
+      'npcIdle',
+      () => {
+        console.log('Interacted with guard at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      0.8,
+    );
+
+    // Guard 2
+    this.objectManager.createObject(
+      370,
+      360,
+      'npcIdle',
+      () => {
+        console.log('Interacted with guard at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      0.8,
+    );
+
+    this.physics.add.collider(
+      this.player,
+      this.npcGroup,
+      undefined,
+      undefined,
+      this,
+    );
+    this.physics.add.collider(this.player, cat, undefined, undefined, this);
+    this.physics.add.collider(npc1, cat, undefined, undefined, this);
+    this.physics.add.collider(cat, this.player, undefined, undefined, this);
 
     // Set up input keys
-    if( this.input.keyboard != null) {
+    if (this.input.keyboard != null) {
       this.cursors = this.input.keyboard.createCursorKeys();
       this.journalKey = this.input.keyboard.addKey(
-          Phaser.Input.Keyboard.KeyCodes.J,
+        Phaser.Input.Keyboard.KeyCodes.J,
       );
-      this.wKey = this.input.keyboard.addKey("w");
-      this.sKey = this.input.keyboard.addKey("s");
-      this.aKey = this.input.keyboard.addKey("a");
-      this.dKey = this.input.keyboard.addKey("d");
+      this.wKey = this.input.keyboard.addKey('w');
+      this.sKey = this.input.keyboard.addKey('s');
+      this.aKey = this.input.keyboard.addKey('a');
+      this.dKey = this.input.keyboard.addKey('d');
     }
 
     /* todo Game over condition */
@@ -215,8 +297,6 @@ export class Game extends Scene {
     eventsCenter.on('enableMovement', () => {
       this.movementEnabled = true;
     });
-
-    this.availableActionNum = Math.random() * (8-5) + 5;
   }
 
   update() {
@@ -230,7 +310,7 @@ export class Game extends Scene {
     // Update objects
     this.objectManager.update();
 
-    const speed = 200;
+    const speed = 250;
 
     // Reset player velocity
     this.player.setVelocity(0);
