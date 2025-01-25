@@ -236,6 +236,7 @@ export class Game extends Scene {
         eventsCenter.emit('toggleInteraction', bubbleData);
       },
       0.8,
+      true,
     );
 
     // Guard 2
@@ -248,6 +249,7 @@ export class Game extends Scene {
         eventsCenter.emit('toggleInteraction', bubbleData);
       },
       0.8,
+      true,
     );
 
     this.physics.add.collider(
