@@ -24,7 +24,7 @@ export class InteractionUi extends Scene {
 
     // Create the background of the dialog box
     const dialogBg = this.add
-      .rectangle(0, 0, 300, 100, 0x000000)
+      .rectangle(0, 0, 600, 300, 0x000000)
       .setOrigin(0.5);
     dialogBg.setStrokeStyle(2, 0xffffff);
 
@@ -47,6 +47,7 @@ export class InteractionUi extends Scene {
   private toggleInteraction(data) {
     console.log('toggle', data);
     if (this.isInteractionOpen) {
+      eventsCenter.emit('enableMovement');
       console.log('close');
       // Close
       this.uiBox.setVisible(false);
@@ -54,6 +55,7 @@ export class InteractionUi extends Scene {
     } else {
       console.log('open');
       // Open
+      eventsCenter.emit('disableMovement');
       this.uiText.setText('data');
       this.uiBox.setVisible(true);
       this.isInteractionOpen = true;

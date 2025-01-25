@@ -9,7 +9,9 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
 
     // Add the object to the scene
     scene.add.existing(this);
-    scene.physics.add.existing(this);
+    scene.physics.add.existing(this, true);
+
+    scene.physics.add.collider(scene.player, this, undefined, undefined, scene);
 
     // Create an interaction hint
     this.interactionHint = scene.add
@@ -25,16 +27,23 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     player: Phaser.Physics.Arcade.Sprite,
     onInteract: () => void,
   ) {
+    console.log('handleProximity');
     if (!this.canInteract) {
       this.interactionHint.setVisible(true);
       this.canInteract = true;
 
       // Listen for interaction key
+      console.log('listener...');
       this.scene.input.keyboard.on('keydown-E', () => {
-        if (this.canInteract) {
-          onInteract();
-        }
+        console.log('e down');
+        this.handleInteraction(onInteract);
       });
+    }
+  }
+
+  handleInteraction(onInteract: () => void) {
+    if (this.canInteract) {
+      onInteract();
     }
   }
 
