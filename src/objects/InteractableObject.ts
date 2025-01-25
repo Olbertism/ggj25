@@ -16,9 +16,6 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
 
     scale && this.setScale(scale);
 
-    //isAnimated && this.play(texture, true);
-    // isAnimated && scene.add.sprite(x, y, texture).play('run');
-
     // Add the object to the scene
     scene.add.existing(this);
     scene.physics.add.existing(this, true);

@@ -1,11 +1,11 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
 import { bubbleData } from '../data/store';
+import { MapObstacles } from '../gameObjects/MapObstacles.ts';
 import { Npc } from '../gameObjects/Npc';
+import { ActionHandler } from '../objects/ActionHandler.ts';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
-import { MapObstacles } from './../gameObjects/MapObstacles.ts'
-import {ActionHandler} from "../objects/ActionHandler.ts";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -293,7 +293,7 @@ export class Game extends Scene {
         eventsCenter.emit('toggleInteraction', bubbleData);
       },
       0.8,
-      true
+      true,
     );
 
     // Guard 2
@@ -306,6 +306,7 @@ export class Game extends Scene {
         eventsCenter.emit('toggleInteraction', bubbleData);
       },
       0.8,
+      true,
       true
     );
     //oldman
@@ -322,7 +323,7 @@ export class Game extends Scene {
     );
 //old woman
     this.objectManager.createObject(
-      1260, 
+      1260,
       630,
       'oldWomanIdle',
       () => {
