@@ -1,5 +1,7 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
+import { bubbleData } from '../data/store';
+import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
 import {MapObstacles} from "./MapObstacles.ts";
 
@@ -8,16 +10,14 @@ export class Game extends Scene {
   background: Phaser.GameObjects.Image;
   msg_text: Phaser.GameObjects.Text;
 
+  private objectManager: ObjectManager;
+
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-
-  private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
 
   bubbleContainer: Phaser.GameObjects.Container;
   bubbleZone: Phaser.GameObjects.Rectangle;
   bubbleBody: Phaser.FX.Circle;
-
-  private interactionKey!: Phaser.Input.Keyboard.Key;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
   private wKey!: Phaser.Input.Keyboard.Key;
@@ -28,8 +28,7 @@ export class Game extends Scene {
   private mapObstacles: MapObstacles;
   private obstacleGroup: Phaser.GameObjects.Group;
 
-  isInteractionEnabled: boolean = false;
-  canInteract: boolean = false;
+  movementEnabled: boolean = true; // Flag to enable/disable input
 
   constructor() {
     super('Game');
@@ -60,6 +59,11 @@ export class Game extends Scene {
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
 
+    // Initialize ObjectManager
+    this.objectManager = new ObjectManager(this);
+
+    console.log('inited');
+
     //player sprites
     this.anims.create({
       key: 'idle',
@@ -89,12 +93,9 @@ export class Game extends Scene {
 
     this.camera.startFollow(this.player);
 
-    // Create an obstacle rectangle
-    this.obstacle = this.add.rectangle(400, 450, 200, 50, 0xff0000); // Red rectangle
-    this.physics.add.existing(this.obstacle, true); // Add physics to the rectangle
+
     this.mapObstacles = new MapObstacles(this);
     this.obstacleGroup = this.mapObstacles.createObstacles();
-
 
     this.physics.add.collider(
       this.player,
@@ -104,21 +105,21 @@ export class Game extends Scene {
       this,
     );
 
-    // Add collision between the player and the obstacle
-    this.physics.add.overlap(
-      this.player,
-      this.obstacleGroup,
-      undefined,//this.handleOverlap,,
-      undefined,
-      this,
-    );
+    // Add objects using ObjectManager
+    this.objectManager.createObject(200, 150, 'object', () => {
+      console.log('Interacted with object at (200, 150)!');
+      eventsCenter.emit('toggleInteraction', this);
+    });
+
+    // Create bubble
+    this.objectManager.createObject(1230, 1100, 'bubble', () => {
+      console.log('Interacted with bubble at (1230, 1100)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
 
     // Set up input keys
     if( this.input.keyboard != null) {
       this.cursors = this.input.keyboard.createCursorKeys();
-      this.interactionKey = this.input.keyboard.addKey(
-          Phaser.Input.Keyboard.KeyCodes.E,
-      );
       this.journalKey = this.input.keyboard.addKey(
           Phaser.Input.Keyboard.KeyCodes.J,
       );
@@ -132,24 +133,35 @@ export class Game extends Scene {
       this.scene.start('GameOver');
     }); */
 
-    this.bubbleContainer = this.add.container(620, 580);
-    this.bubbleZone = this.add
-      .rectangle(620, 580, 160, 200)
-      .setStrokeStyle(2, 0xfff000);
-    this.bubbleContainer.add(this.bubbleZone);
-
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const worldX = pointer.worldX;
       const worldY = pointer.worldY;
 
       console.log(`Clicked at world position: x: ${worldX}, y: ${worldY}`);
     });
+
+    eventsCenter.on('disableMovement', () => {
+      console.log('disableMovement');
+      this.movementEnabled = false;
+    });
+
+    eventsCenter.on('enableMovement', () => {
+      this.movementEnabled = true;
+    });
   }
 
   update() {
     if (!this.cursors) return;
 
-    const speed = 500;
+    if (!this.movementEnabled) {
+      this.player.setVelocity(0, 0); // Stop movement if input is disabled
+      return;
+    }
+
+    // Update objects
+    this.objectManager.update();
+
+    const speed = 200;
 
     // Reset player velocity
     this.player.setVelocity(0);
@@ -179,17 +191,6 @@ export class Game extends Scene {
     }
 
     if (
-      Phaser.Input.Keyboard.JustDown(this.interactionKey) &&
-      this.canInteract
-    ) {
-      eventsCenter.emit('toggleInteraction', 'data');
-    }
-
-    // If no longer overlapping, reset canInteract
-    if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
-      this.handleExitProximity();
-    }
-    if (
       this.player.body?.velocity.x !== 0 ||
       this.player.body?.velocity.y !== 0
     ) {
@@ -203,24 +204,5 @@ export class Game extends Scene {
         this.player.play('idle', true);
       }
     }
-  }
-
-  private handleExitProximity() {
-    this.canInteract = false;
-  }
-
-  private handleProximity() {
-    this.canInteract = true;
-
-    // Optionally show a hint to the player
-    this.add.text(
-      this.obstacle.x,
-      this.obstacle.y - 20,
-      'Press E to interact',
-      {
-        fontSize: '12px',
-        color: '#ffffff',
-      },
-    );
   }
 }
