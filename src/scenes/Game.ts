@@ -56,6 +56,15 @@ export class Game extends Scene {
       frameHeight: 120,
     });
 
+    this.load.spritesheet('oldManIdle', 'assets/old_guy_idle.png', {
+      frameWidth: 90,
+      frameHeight: 125,
+    });
+    this.load.spritesheet('oldWomanIdle', 'assets/old_woman_idle.png', {
+      frameWidth: 90,
+      frameHeight: 120,
+    });
+
     //cat assets:
     this.load.spritesheet('catIdle', 'assets/cat_idle_sprite.png', {
       frameWidth: 42,
@@ -108,6 +117,24 @@ export class Game extends Scene {
     this.anims.create({
       key: 'npcIdle',
       frames: this.anims.generateFrameNumbers('npcIdle', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      }),
+      frameRate: 2,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'oldManIdle',
+      frames: this.anims.generateFrameNumbers('oldManIdle', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      }),
+      frameRate: 2,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'oldWomanIdle',
+      frames: this.anims.generateFrameNumbers('oldWomanIdle', {
         frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       }),
       frameRate: 2,
@@ -209,10 +236,10 @@ export class Game extends Scene {
     });
 
     // Ray installation
-    this.objectManager.createObject(800, 1000, 'rays', () => {
+    this.objectManager.createObject(800, 1000, 'lamp', () => {
       console.log('Interacted with rays at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
-    });
+    }, 1.5);
 
     // Lab Rat
     this.objectManager.createObject(490, 1350, 'lab-rat', () => {
@@ -236,6 +263,7 @@ export class Game extends Scene {
         eventsCenter.emit('toggleInteraction', bubbleData);
       },
       0.8,
+      true
     );
 
     // Guard 2
@@ -248,6 +276,31 @@ export class Game extends Scene {
         eventsCenter.emit('toggleInteraction', bubbleData);
       },
       0.8,
+      true
+    );
+    //oldman
+    this.objectManager.createObject(
+      1150,
+      630,
+      'oldManIdle',
+      () => {
+        console.log('Interacted with guard at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      0.9,
+      true
+    );
+//old woman
+    this.objectManager.createObject(
+      1260, 
+      630,
+      'oldWomanIdle',
+      () => {
+        console.log('Interacted with guard at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      0.9,
+      true
     );
 
     this.physics.add.collider(
