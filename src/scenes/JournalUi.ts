@@ -1,11 +1,7 @@
-import { GameObjects, Scene } from 'phaser';
+import { Scene } from 'phaser';
 import eventsCenter from './EventsCenter';
 
 export class JournalUi extends Scene {
-  background: GameObjects.Image;
-  logo: GameObjects.Image;
-  title: GameObjects.Text;
-
   journalKey: Phaser.Input.Keyboard.Key;
   journal: Phaser.GameObjects.Container;
   journalContent;
