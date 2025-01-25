@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
+import eventsCenter from './EventsCenter';
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -16,9 +17,6 @@ export class Game extends Scene {
   private dialogText!: Phaser.GameObjects.Text;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
-  private journal!: Phaser.GameObjects.Container;
-  private journalContent;
-  private isJournalOpen: boolean = false; // State to track journal visibility
 
   constructor() {
     super('Game');
@@ -27,14 +25,14 @@ export class Game extends Scene {
   preload() {
     // Load assets
     //this.load.image('player', 'assets/player.png');
-    this.load.spritesheet("idleSheet", "assets/player_new_idle_sprite.png", {
-        frameWidth:80,
-        frameHeight:120,
+    this.load.spritesheet('idleSheet', 'assets/player_new_idle_sprite.png', {
+      frameWidth: 80,
+      frameHeight: 120,
     });
 
-    this.load.spritesheet("walkSheet", "assets/player_new_walk_sprite.png", {
-        frameWidth:90,
-        frameHeight:120,
+    this.load.spritesheet('walkSheet', 'assets/player_new_walk_sprite.png', {
+      frameWidth: 90,
+      frameHeight: 120,
     });
   }
 
@@ -42,30 +40,34 @@ export class Game extends Scene {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
 
+    this.scene.run('JournalUi');
+    this.scene.run('KeyLegendUi');
+
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
 
     //player sprites
-        this.anims.create({
-          key:"idle",
-          frames: this.anims.generateFrameNumbers("idleSheet", {frames: [0,1,2,3,4,5]}),
-          frameRate: 5,
-          repeat: -1
-        })
+    this.anims.create({
+      key: 'idle',
+      frames: this.anims.generateFrameNumbers('idleSheet', {
+        frames: [0, 1, 2, 3, 4, 5],
+      }),
+      frameRate: 5,
+      repeat: -1,
+    });
 
-        this.anims.create({
-          key:"walk",
-          frames: this.anims.generateFrameNumbers("walkSheet", {frames: [0,1,2,3,4,5]}),
-          frameRate: 10,
-          repeat: -1
-        })  
+    this.anims.create({
+      key: 'walk',
+      frames: this.anims.generateFrameNumbers('walkSheet', {
+        frames: [0, 1, 2, 3, 4, 5],
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
 
-        this.player = this.physics.add.sprite(400, 200, "idleSheet");
-        this.player.play("idle");
-
-        
-
+    this.player = this.physics.add.sprite(400, 200, 'idleSheet');
+    this.player.play('idle');
 
     // Add player to the scene
     //this.player = this.physics.add.sprite(400, 200, 'player');
@@ -100,14 +102,9 @@ export class Game extends Scene {
     this.createDialogBox();
     this.dialogBox.setVisible(false);
 
-    this.createJournal();
-    this.journal.setVisible(false);
-
     /* this.input.once('pointerdown', () => {
       this.scene.start('GameOver');
     }); */
-
-    this.createKeyLegend();
   }
 
   update() {
@@ -124,7 +121,7 @@ export class Game extends Scene {
       this.player.flipX = true;
     } else if (this.cursors.right?.isDown && !this.dialogBox.visible) {
       this.player.setVelocityX(speed);
-      this.player.flipX = false
+      this.player.flipX = false;
     }
 
     // Vertical movement
@@ -139,7 +136,10 @@ export class Game extends Scene {
 
     // Toggle journal visibility
     if (Phaser.Input.Keyboard.JustDown(this.journalKey)) {
-      this.toggleJournal();
+      console.log('journal key');
+      // this.events.emit('toggleJournal');
+      eventsCenter.emit('toggleJournal');
+      // this.toggleJournal();
     }
 
     // Check for interaction key press
@@ -149,17 +149,20 @@ export class Game extends Scene {
     ) {
       this.closeDialog();
     }
-    if (this.player.body?.velocity.x !== 0 || this.player.body?.velocity.y !== 0) {
+    if (
+      this.player.body?.velocity.x !== 0 ||
+      this.player.body?.velocity.y !== 0
+    ) {
       // Player is moving
-      if (this.player.anims.currentAnim?.key !== "walk") {
-          this.player.play("walk", true);
+      if (this.player.anims.currentAnim?.key !== 'walk') {
+        this.player.play('walk', true);
       }
-  } else {
+    } else {
       // Player is idle
-      if (this.player.anims.currentAnim?.key !== "idle") {
-          this.player.play("idle", true);
+      if (this.player.anims.currentAnim?.key !== 'idle') {
+        this.player.play('idle', true);
       }
-  }
+    }
   }
 
   private displayDialog(message: string) {
@@ -169,7 +172,6 @@ export class Game extends Scene {
   }
 
   private handleOverlap() {
-    console.log('handle');
     // Show the dialog box when the player is near the obstacle
     this.displayDialog("Hello! I'm just a placeholder rectangle.");
   }
@@ -201,163 +203,5 @@ export class Game extends Scene {
   private closeDialog() {
     // Hide the dialog box
     this.dialogBox.setVisible(false);
-  }
-
-  private createJournal() {
-    // Create a journal UI container
-    this.journal = this.add.container(500, 400);
-
-    // Background of the journal
-    const journalBg = this.add
-      .rectangle(0, 0, 900, 600, 0x222222)
-      .setOrigin(0.5);
-    journalBg.setStrokeStyle(3, 0xffffff);
-
-    // Title of the journal
-    const journalTitle = this.add
-      .text(0, -150, 'Journal', {
-        fontSize: '32px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-
-    // Tab buttons
-    const tabs = ['Notes', 'Quests', 'Lore'];
-    const tabButtons: Phaser.GameObjects.Text[] = [];
-
-    // Create tab buttons dynamically
-    tabs.forEach((tab, index) => {
-      const tabButton = this.add
-        .text(-250 + index * 200, -120, tab, {
-          fontSize: '18px',
-          color: '#ffffff',
-          backgroundColor: '#444444',
-          padding: { left: 10, right: 10, top: 5, bottom: 5 },
-        })
-        .setOrigin(0.5)
-        .setInteractive({ useHandCursor: true })
-        .setDepth(99)
-        .on('pointerdown', () => this.switchJournalTab(tab)); // Add tab click behavior
-
-      tabButtons.push(tabButton);
-      // this.journal.add(tabButton);
-    });
-
-    // Placeholder content area
-    const journalContent = this.add
-      .text(0, 0, '', {
-        fontSize: '18px',
-        color: '#ffffff',
-        align: 'center',
-        wordWrap: { width: 550 },
-      })
-      .setOrigin(0.5);
-
-    this.journal.add([journalBg, journalTitle, ...tabButtons, journalContent]);
-
-    // Store the journal content text object for dynamic updates
-    this.journalContent = journalContent;
-
-    // Start on the first tab
-    this.switchJournalTab('Notes');
-  }
-
-  private switchJournalTab(tab: string) {
-    // Update journal content based on the selected tab
-    const tabContent: Record<string, string> = {
-      Notes: 'This is the Notes tab. Write your thoughts here.',
-      Quests: 'This is the Quests tab. Track your progress here.',
-      Lore: 'This is the Lore tab. Read about the world here.',
-    };
-
-    // Highlight the active tab
-    this.journal.each((child) => {
-      if (child instanceof Phaser.GameObjects.Text && tabContent[child.text]) {
-        child.setBackgroundColor(child.text === tab ? '#888888' : '#444444');
-      }
-    });
-
-    // Update the content text
-    this.journalContent?.setText(tabContent[tab] || 'No content available.');
-  }
-
-  private toggleJournal() {
-    if (this.isJournalOpen) {
-      // Close the journal
-      this.journal.setVisible(false);
-      this.isJournalOpen = false;
-    } else {
-      // Open the journal
-      this.journal.setVisible(true);
-      this.isJournalOpen = true;
-    }
-  }
-
-  private createKeyLegend() {
-    // Create a container for the key legend
-    const keyLegend = this.add.container(0, 0);
-
-    // Background for the legend
-    const legendBg = this.add
-      .rectangle(0, 0, 400, 50, 0x000000, 0.5)
-      .setOrigin(0.5)
-      .setStrokeStyle(2, 0xffffff);
-
-    // Create individual keys
-    const keyJ = this.add
-      .rectangle(-120, 0, 40, 40, 0x444444)
-      .setOrigin(0.5)
-      .setStrokeStyle(2, 0xffffff);
-    const keyJText = this.add
-      .text(-120, 0, 'J', {
-        fontSize: '20px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-
-    const keyE = this.add
-      .rectangle(40, 0, 40, 40, 0x444444)
-      .setOrigin(0.5)
-      .setStrokeStyle(2, 0xffffff);
-    const keyEText = this.add
-      .text(40, 0, 'E', {
-        fontSize: '20px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-
-    // Key descriptions
-    const journalText = this.add
-      .text(-70, 0, 'Journal', {
-        fontSize: '16px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-    const interactText = this.add
-      .text(90, 0, 'Interact', {
-        fontSize: '16px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-
-    // Add all elements to the container
-    keyLegend.add([
-      legendBg,
-      keyJ,
-      keyJText,
-      journalText,
-      keyE,
-      keyEText,
-      interactText,
-    ]);
-
-    // Position the key legend at the bottom of the screen
-    keyLegend.setPosition(
-      this.cameras.main.width / 2,
-      this.cameras.main.height - 40,
-    );
-
-    // Add it to the scene
-    this.add.existing(keyLegend);
   }
 }
