@@ -15,9 +15,10 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
 
     // Create an interaction hint
     this.interactionHint = scene.add
-      .text(x, y - 20, 'Press E to interact', {
-        fontSize: '12px',
+      .text(x - 40, y - 10, 'Press E to interact', {
+        fontSize: '20px',
         color: '#ffffff',
+        backgroundColor: 'grey',
       })
       .setVisible(false);
   }

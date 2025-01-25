@@ -6,3 +6,9 @@ export const bubbleData = {
     { key: 'take-measurements', label: 'Take measurements' },
   ],
 } as const;
+
+export interface basicDataObject {
+  title: string;
+  message: string;
+  actions: Record<string, any>[];
+}
