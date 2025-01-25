@@ -4,7 +4,8 @@ import { bubbleData } from '../data/store';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
 import {Npc } from "../gameObjects/Npc";
-import {MapObstacles} from "./MapObstacles.ts";
+import {MapObstacles} from "../gameObjects/MapObstacles.ts";
+import {ActionHandler} from "../objects/ActionHandler.ts";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -12,6 +13,7 @@ export class Game extends Scene {
   msg_text: Phaser.GameObjects.Text;
 
   private objectManager: ObjectManager;
+  private actionHandler: ActionHandler;
 
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -33,6 +35,8 @@ export class Game extends Scene {
   private obstacleGroup: Phaser.GameObjects.Group;
 
   movementEnabled: boolean = true; // Flag to enable/disable input
+
+  private availableActionNum : integer;
 
   constructor() {
     super('Game');
@@ -81,6 +85,7 @@ export class Game extends Scene {
 
     // Initialize ObjectManager
     this.objectManager = new ObjectManager(this);
+    this.actionHandler = new ActionHandler();
 
     console.log('inited');
 
@@ -144,13 +149,12 @@ export class Game extends Scene {
  
      // Add NPCs to a group for easier management
      this.npcGroup.add(npc1);
-     
 
      //ad cat to scene:
      this.add.existing(cat);
      this.physics.add.existing(cat);
 
-
+     // add bounding boxes for map objects
     this.mapObstacles = new MapObstacles(this);
     this.obstacleGroup = this.mapObstacles.createObstacles();
 
@@ -191,9 +195,10 @@ export class Game extends Scene {
       this.dKey = this.input.keyboard.addKey("d");
     }
 
-    /* this.input.once('pointerdown', () => {
-      this.scene.start('GameOver');
-    }); */
+    /* todo Game over condition */
+    this.input.once('pointerdown', () => {
+      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), totalPoints: this.actionHandler.getTotalPoints()});
+    });
 
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const worldX = pointer.worldX;
@@ -210,6 +215,8 @@ export class Game extends Scene {
     eventsCenter.on('enableMovement', () => {
       this.movementEnabled = true;
     });
+
+    this.availableActionNum = Math.random() * (8-5) + 5;
   }
 
   update() {
