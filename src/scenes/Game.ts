@@ -12,11 +12,18 @@ export class Game extends Scene {
 
   private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
 
+  bubbleContainer: Phaser.GameObjects.Container;
+  bubbleZone: Phaser.GameObjects.Rectangle;
+  bubbleBody: Phaser.FX.Circle;
+
   private interactionKey!: Phaser.Input.Keyboard.Key;
   private dialogBox: Phaser.GameObjects.Container;
   private dialogText!: Phaser.GameObjects.Text;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
+
+  isInteractionEnabled: boolean = false;
+  canInteract: boolean = false;
 
   constructor() {
     super('Game');
@@ -49,11 +56,22 @@ export class Game extends Scene {
     this.obstacle = this.add.rectangle(400, 450, 200, 50, 0xff0000); // Red rectangle
     this.physics.add.existing(this.obstacle, true); // Add physics to the rectangle
 
-    // Add collision between the player and the obstacle
+    this.obstacleCircle = this.add.circle(400, 450, 40, 0xfff000);
+    this.physics.add.existing(this.obstacleCircle, true);
+
     this.physics.add.collider(
       this.player,
+      this.obstacleCircle,
+      null,
+      undefined,
+      this,
+    );
+
+    // Add collision between the player and the obstacle
+    this.physics.add.overlap(
+      this.player,
       this.obstacle,
-      this.handleOverlap,
+      this.handleProximity,
       undefined,
       this,
     );
@@ -74,10 +92,25 @@ export class Game extends Scene {
     /* this.input.once('pointerdown', () => {
       this.scene.start('GameOver');
     }); */
+
+    this.bubbleContainer = this.add.container(620, 580);
+    this.bubbleZone = this.add
+      .rectangle(620, 580, 160, 200)
+      .setStrokeStyle(2, 0xfff000);
+    this.bubbleContainer.add(this.bubbleZone);
+
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      const worldX = pointer.worldX;
+      const worldY = pointer.worldY;
+
+      console.log(`Clicked at world position: x: ${worldX}, y: ${worldY}`);
+    });
   }
 
   update() {
     if (!this.cursors) return;
+
+    console.log(this.camera.x);
 
     const speed = 200;
 
@@ -103,10 +136,7 @@ export class Game extends Scene {
 
     // Toggle journal visibility
     if (Phaser.Input.Keyboard.JustDown(this.journalKey)) {
-      console.log('journal key');
-      // this.events.emit('toggleJournal');
       eventsCenter.emit('toggleJournal');
-      // this.toggleJournal();
     }
 
     // Check for interaction key press
@@ -115,6 +145,11 @@ export class Game extends Scene {
       this.dialogBox.visible
     ) {
       this.closeDialog();
+    }
+
+    // If no longer overlapping, reset canInteract
+    if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
+      this.handleExitProximity();
     }
   }
 
@@ -127,6 +162,38 @@ export class Game extends Scene {
   private handleOverlap() {
     // Show the dialog box when the player is near the obstacle
     this.displayDialog("Hello! I'm just a placeholder rectangle.");
+  }
+
+  private handleExitProximity() {
+    // Hide interaction hint and reset flag
+    // this.interactionHint?.setVisible(false);
+    this.canInteract = false;
+  }
+
+  private handleProximity() {
+    this.canInteract = true;
+
+    // Listen for the "E" key for interaction
+    this.input.keyboard.once('keydown-E', this.handleInteraction, this);
+
+    // Optionally show a hint to the player
+    this.add.text(
+      this.obstacle.x,
+      this.obstacle.y - 20,
+      'Press E to interact',
+      {
+        fontSize: '12px',
+        color: '#ffffff',
+      },
+    );
+  }
+
+  private handleInteraction() {
+    console.log(this.canInteract);
+    if (this.canInteract) {
+      console.log('EEEEEEE');
+      // this.scene.start('NewScene'); // Transition to a new scene
+    }
   }
 
   private createDialogBox() {
