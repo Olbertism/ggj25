@@ -11,7 +11,7 @@ export class GameOver extends Scene
         super('GameOver');
     }
 
-    create (data)
+    create (data: any)
     {
         this.camera = this.cameras.main
         this.camera.setBackgroundColor(0xff0000);
@@ -38,7 +38,7 @@ export class GameOver extends Scene
         });
 
         //Show scores for each action
-        actionsTaken.forEach((action, index) => {
+        actionsTaken.forEach((action: any, index: number) => {
             // Label (left)
             this.add.text(200, 250 + index * 30, action.label, {
                 font: '20px Arial',
