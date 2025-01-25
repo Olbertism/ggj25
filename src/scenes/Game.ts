@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
 import eventsCenter from './EventsCenter';
+import {MapObstacles} from "./MapObstacles.ts";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -19,6 +20,13 @@ export class Game extends Scene {
   private interactionKey!: Phaser.Input.Keyboard.Key;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
+  private wKey!: Phaser.Input.Keyboard.Key;
+  private sKey!: Phaser.Input.Keyboard.Key;
+  private aKey!: Phaser.Input.Keyboard.Key;
+  private dKey!: Phaser.Input.Keyboard.Key;
+
+  private mapObstacles: MapObstacles;
+  private obstacleGroup: Phaser.GameObjects.Group;
 
   isInteractionEnabled: boolean = false;
   canInteract: boolean = false;
@@ -84,14 +92,14 @@ export class Game extends Scene {
     // Create an obstacle rectangle
     this.obstacle = this.add.rectangle(400, 450, 200, 50, 0xff0000); // Red rectangle
     this.physics.add.existing(this.obstacle, true); // Add physics to the rectangle
+    this.mapObstacles = new MapObstacles(this);
+    this.obstacleGroup = this.mapObstacles.createObstacles();
 
-    this.obstacleCircle = this.add.circle(400, 450, 40, 0xfff000);
-    this.physics.add.existing(this.obstacleCircle, true);
 
     this.physics.add.collider(
       this.player,
-      this.obstacleCircle,
-      null,
+      this.obstacleGroup,
+      undefined,
       undefined,
       this,
     );
@@ -99,20 +107,26 @@ export class Game extends Scene {
     // Add collision between the player and the obstacle
     this.physics.add.overlap(
       this.player,
-      this.obstacle,
-      this.handleProximity,
+      this.obstacleGroup,
+      undefined,//this.handleOverlap,,
       undefined,
       this,
     );
 
     // Set up input keys
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.interactionKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.E,
-    );
-    this.journalKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.J,
-    );
+    if( this.input.keyboard != null) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+      this.interactionKey = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.E,
+      );
+      this.journalKey = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.J,
+      );
+      this.wKey = this.input.keyboard.addKey("w");
+      this.sKey = this.input.keyboard.addKey("s");
+      this.aKey = this.input.keyboard.addKey("a");
+      this.dKey = this.input.keyboard.addKey("d");
+    }
 
     /* this.input.once('pointerdown', () => {
       this.scene.start('GameOver');
@@ -135,24 +149,24 @@ export class Game extends Scene {
   update() {
     if (!this.cursors) return;
 
-    const speed = 200;
+    const speed = 500;
 
     // Reset player velocity
     this.player.setVelocity(0);
 
     // Horizontal movement
-    if (this.cursors.left?.isDown) {
+    if (this.cursors.left?.isDown || this.aKey.isDown) {
       this.player.setVelocityX(-speed);
       this.player.flipX = true;
-    } else if (this.cursors.right?.isDown) {
+    } else if (this.cursors.right?.isDown || this.dKey.isDown) {
       this.player.setVelocityX(speed);
       this.player.flipX = false;
     }
 
     // Vertical movement
-    if (this.cursors.up?.isDown) {
+    if (this.cursors.up?.isDown || this.wKey.isDown) {
       this.player.setVelocityY(-speed);
-    } else if (this.cursors.down?.isDown) {
+    } else if (this.cursors.down?.isDown || this.sKey.isDown) {
       this.player.setVelocityY(speed);
     }
 
