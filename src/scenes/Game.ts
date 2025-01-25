@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
+import { bubbleData } from '../data/store';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
 
@@ -13,18 +14,13 @@ export class Game extends Scene {
   private player: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  // private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
-
   bubbleContainer: Phaser.GameObjects.Container;
   bubbleZone: Phaser.GameObjects.Rectangle;
   bubbleBody: Phaser.FX.Circle;
 
-  // private interactionKey!: Phaser.Input.Keyboard.Key;
-
   private journalKey!: Phaser.Input.Keyboard.Key;
 
-  // isInteractionEnabled: boolean = false;
-  // canInteract: boolean = false;
+  movementEnabled: boolean = true; // Flag to enable/disable input
 
   constructor() {
     super('Game');
@@ -94,10 +90,12 @@ export class Game extends Scene {
       console.log('Interacted with object at (200, 150)!');
       eventsCenter.emit('toggleInteraction', this);
     });
-    /*
-    this.objectManager.createObject(300, 250, 'object', () => {
-      console.log('Interacted with object at (300, 250)!');
-    }); */
+
+    // Create bubble
+    this.objectManager.createObject(1230, 1100, 'bubble', () => {
+      console.log('Interacted with bubble at (1230, 1100)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
 
     // Set up input keys
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -112,22 +110,30 @@ export class Game extends Scene {
       this.scene.start('GameOver');
     }); */
 
-    this.bubbleContainer = this.add.container(620, 580);
-    this.bubbleZone = this.add
-      .rectangle(620, 580, 160, 200)
-      .setStrokeStyle(2, 0xfff000);
-    this.bubbleContainer.add(this.bubbleZone);
-
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const worldX = pointer.worldX;
       const worldY = pointer.worldY;
 
       console.log(`Clicked at world position: x: ${worldX}, y: ${worldY}`);
     });
+
+    eventsCenter.on('disableMovement', () => {
+      console.log('disableMovement');
+      this.movementEnabled = false;
+    });
+
+    eventsCenter.on('enableMovement', () => {
+      this.movementEnabled = true;
+    });
   }
 
   update() {
     if (!this.cursors) return;
+
+    if (!this.movementEnabled) {
+      this.player.setVelocity(0, 0); // Stop movement if input is disabled
+      return;
+    }
 
     // Update objects
     this.objectManager.update();
@@ -161,17 +167,6 @@ export class Game extends Scene {
       eventsCenter.emit('toggleJournal');
     }
 
-    /*     if (
-      Phaser.Input.Keyboard.JustDown(this.interactionKey) &&
-      this.canInteract
-    ) {
-      eventsCenter.emit('toggleInteraction', 'data');
-    } */
-
-    // If no longer overlapping, reset canInteract
-    /* if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
-      this.handleExitProximity();
-    } */
     if (
       this.player.body?.velocity.x !== 0 ||
       this.player.body?.velocity.y !== 0
@@ -187,23 +182,4 @@ export class Game extends Scene {
       }
     }
   }
-
-  /* private handleExitProximity() {
-    this.canInteract = false;
-  }
-
-  private handleProximity() {
-    this.canInteract = true;
-
-    // Optionally show a hint to the player
-    this.add.text(
-      this.obstacle.x,
-      this.obstacle.y - 20,
-      'Press E to interact',
-      {
-        fontSize: '12px',
-        color: '#ffffff',
-      },
-    );
-  } */
 }
