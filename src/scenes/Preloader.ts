@@ -28,6 +28,7 @@ export class Preloader extends Scene {
 
     this.load.image('logo', 'logo.png');
     this.load.image('bubble', 'bubble.png');
+    //this.load.image('guard', 'new_police_idle_sprite.png');
   }
 
   create() {

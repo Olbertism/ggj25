@@ -43,13 +43,13 @@ export class KeyLegendUi extends Scene {
 
     // Key descriptions
     const journalText = this.add
-      .text(-70, 0, 'Journal', {
+      .text(-55, 0, 'Journal', {
         fontSize: '16px',
         color: '#ffffff',
       })
       .setOrigin(0.5);
     const interactText = this.add
-      .text(90, 0, 'Interact', {
+      .text(105, 0, 'Interact', {
         fontSize: '16px',
         color: '#ffffff',
       })

@@ -82,8 +82,6 @@ export class Game extends Scene {
     // Initialize ObjectManager
     this.objectManager = new ObjectManager(this);
 
-    console.log('inited');
-
     //player sprites
     this.anims.create({
       key: 'idle',
@@ -103,7 +101,7 @@ export class Game extends Scene {
       repeat: -1,
     });
 
-    this.player = this.physics.add.sprite(1200, 600, 'idleSheet');
+    this.player = this.physics.add.sprite(850, 850, 'idleSheet');
     this.player.play('idle');
 
     //npc sprites:
@@ -135,8 +133,6 @@ export class Game extends Scene {
       repeat: -1,
     });
 
-    // Add player to the scene
-    //this.player = this.physics.add.sprite(400, 200, 'player');
     this.player.setScale(0.8);
     this.player.setCollideWorldBounds(true);
 
@@ -186,17 +182,73 @@ export class Game extends Scene {
       this,
     );
 
-    // Add objects using ObjectManager
-    this.objectManager.createObject(200, 150, 'object', () => {
-      console.log('Interacted with object at (200, 150)!');
-      eventsCenter.emit('toggleInteraction', this);
-    });
+    // ### Interactable objects ####
 
-    // Create bubble
+    // Bubble
     this.objectManager.createObject(1230, 1100, 'bubble', () => {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     });
+
+    // Camera
+    this.objectManager.createObject(1500, 1400, 'camera', () => {
+      console.log('Interacted with camera at (1500, 1400)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Old man
+    this.objectManager.createObject(1260, 630, 'old-man', () => {
+      console.log('Interacted with old man at (1230, 1100)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Old woman
+    this.objectManager.createObject(1150, 630, 'old-woman', () => {
+      console.log('Interacted with old woman at (1230, 1100)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Ray installation
+    this.objectManager.createObject(800, 1000, 'rays', () => {
+      console.log('Interacted with rays at (800, 1000)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Lab Rat
+    this.objectManager.createObject(490, 1350, 'lab-rat', () => {
+      console.log('Interacted with lab rat at (800, 1000)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Computer
+    this.objectManager.createObject(570, 1350, 'computer', () => {
+      console.log('Interacted with computer at (800, 1000)!');
+      eventsCenter.emit('toggleInteraction', bubbleData);
+    });
+
+    // Guard 1
+    this.objectManager.createObject(
+      570,
+      460,
+      'npcIdle',
+      () => {
+        console.log('Interacted with guard at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      0.8,
+    );
+
+    // Guard 2
+    this.objectManager.createObject(
+      370,
+      360,
+      'npcIdle',
+      () => {
+        console.log('Interacted with guard at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      0.8,
+    );
 
     this.physics.add.collider(
       this.player,
