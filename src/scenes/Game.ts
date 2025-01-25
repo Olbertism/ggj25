@@ -12,11 +12,16 @@ export class Game extends Scene {
 
   private obstacle: Phaser.GameObjects.Rectangle; // The obstacle
 
+  bubbleContainer: Phaser.GameObjects.Container;
+  bubbleZone: Phaser.GameObjects.Rectangle;
+  bubbleBody: Phaser.FX.Circle;
+
   private interactionKey!: Phaser.Input.Keyboard.Key;
-  private dialogBox: Phaser.GameObjects.Container;
-  private dialogText!: Phaser.GameObjects.Text;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
+
+  isInteractionEnabled: boolean = false;
+  canInteract: boolean = false;
 
   constructor() {
     super('Game');
@@ -24,7 +29,6 @@ export class Game extends Scene {
 
   preload() {
     // Load assets
-    //this.load.image('player', 'assets/player.png');
     this.load.spritesheet('idleSheet', 'assets/player_new_idle_sprite.png', {
       frameWidth: 80,
       frameHeight: 120,
@@ -42,6 +46,7 @@ export class Game extends Scene {
 
     this.scene.run('JournalUi');
     this.scene.run('KeyLegendUi');
+    this.scene.run('InteractionUi');
 
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
@@ -80,11 +85,22 @@ export class Game extends Scene {
     this.obstacle = this.add.rectangle(400, 450, 200, 50, 0xff0000); // Red rectangle
     this.physics.add.existing(this.obstacle, true); // Add physics to the rectangle
 
-    // Add collision between the player and the obstacle
+    this.obstacleCircle = this.add.circle(400, 450, 40, 0xfff000);
+    this.physics.add.existing(this.obstacleCircle, true);
+
     this.physics.add.collider(
       this.player,
+      this.obstacleCircle,
+      null,
+      undefined,
+      this,
+    );
+
+    // Add collision between the player and the obstacle
+    this.physics.add.overlap(
+      this.player,
       this.obstacle,
-      this.handleOverlap,
+      this.handleProximity,
       undefined,
       this,
     );
@@ -98,13 +114,22 @@ export class Game extends Scene {
       Phaser.Input.Keyboard.KeyCodes.J,
     );
 
-    // Create dialog box and journal UI
-    this.createDialogBox();
-    this.dialogBox.setVisible(false);
-
     /* this.input.once('pointerdown', () => {
       this.scene.start('GameOver');
     }); */
+
+    this.bubbleContainer = this.add.container(620, 580);
+    this.bubbleZone = this.add
+      .rectangle(620, 580, 160, 200)
+      .setStrokeStyle(2, 0xfff000);
+    this.bubbleContainer.add(this.bubbleZone);
+
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      const worldX = pointer.worldX;
+      const worldY = pointer.worldY;
+
+      console.log(`Clicked at world position: x: ${worldX}, y: ${worldY}`);
+    });
   }
 
   update() {
@@ -116,18 +141,18 @@ export class Game extends Scene {
     this.player.setVelocity(0);
 
     // Horizontal movement
-    if (this.cursors.left?.isDown && !this.dialogBox.visible) {
+    if (this.cursors.left?.isDown) {
       this.player.setVelocityX(-speed);
       this.player.flipX = true;
-    } else if (this.cursors.right?.isDown && !this.dialogBox.visible) {
+    } else if (this.cursors.right?.isDown) {
       this.player.setVelocityX(speed);
       this.player.flipX = false;
     }
 
     // Vertical movement
-    if (this.cursors.up?.isDown && !this.dialogBox.visible) {
+    if (this.cursors.up?.isDown) {
       this.player.setVelocityY(-speed);
-    } else if (this.cursors.down?.isDown && !this.dialogBox.visible) {
+    } else if (this.cursors.down?.isDown) {
       this.player.setVelocityY(speed);
     }
 
@@ -136,18 +161,19 @@ export class Game extends Scene {
 
     // Toggle journal visibility
     if (Phaser.Input.Keyboard.JustDown(this.journalKey)) {
-      console.log('journal key');
-      // this.events.emit('toggleJournal');
       eventsCenter.emit('toggleJournal');
-      // this.toggleJournal();
     }
 
-    // Check for interaction key press
     if (
       Phaser.Input.Keyboard.JustDown(this.interactionKey) &&
-      this.dialogBox.visible
+      this.canInteract
     ) {
-      this.closeDialog();
+      eventsCenter.emit('toggleInteraction', 'data');
+    }
+
+    // If no longer overlapping, reset canInteract
+    if (this.canInteract && !this.physics.overlap(this.player, this.obstacle)) {
+      this.handleExitProximity();
     }
     if (
       this.player.body?.velocity.x !== 0 ||
@@ -165,43 +191,22 @@ export class Game extends Scene {
     }
   }
 
-  private displayDialog(message: string) {
-    // Update the dialog text and show the dialog box
-    this.dialogText.setText(message);
-    this.dialogBox.setVisible(true);
+  private handleExitProximity() {
+    this.canInteract = false;
   }
 
-  private handleOverlap() {
-    // Show the dialog box when the player is near the obstacle
-    this.displayDialog("Hello! I'm just a placeholder rectangle.");
-  }
+  private handleProximity() {
+    this.canInteract = true;
 
-  private createDialogBox() {
-    console.log('fgjhh');
-    // Create a container for the dialog box
-    this.dialogBox = this.add.container(400, 500);
-
-    // Create the background of the dialog box
-    const dialogBg = this.add
-      .rectangle(0, 0, 300, 100, 0x000000)
-      .setOrigin(0, 0);
-    dialogBg.setStrokeStyle(2, 0xffffff);
-
-    // Create the text for the dialog
-    this.dialogText = this.add
-      .text(0, 0, '', {
-        fontSize: '16px',
+    // Optionally show a hint to the player
+    this.add.text(
+      this.obstacle.x,
+      this.obstacle.y - 20,
+      'Press E to interact',
+      {
+        fontSize: '12px',
         color: '#ffffff',
-        wordWrap: { width: 280 },
-      })
-      .setOrigin(0, 0);
-
-    // Add the background and text to the container
-    this.dialogBox.add([dialogBg, this.dialogText]);
-  }
-
-  private closeDialog() {
-    // Hide the dialog box
-    this.dialogBox.setVisible(false);
+      },
+    );
   }
 }
