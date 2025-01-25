@@ -3,6 +3,7 @@ import { background } from '../commons';
 import { bubbleData } from '../data/store';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
+import {MapObstacles} from "./MapObstacles.ts";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -19,6 +20,13 @@ export class Game extends Scene {
   bubbleBody: Phaser.FX.Circle;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
+  private wKey!: Phaser.Input.Keyboard.Key;
+  private sKey!: Phaser.Input.Keyboard.Key;
+  private aKey!: Phaser.Input.Keyboard.Key;
+  private dKey!: Phaser.Input.Keyboard.Key;
+
+  private mapObstacles: MapObstacles;
+  private obstacleGroup: Phaser.GameObjects.Group;
 
   movementEnabled: boolean = true; // Flag to enable/disable input
 
@@ -85,6 +93,18 @@ export class Game extends Scene {
 
     this.camera.startFollow(this.player);
 
+
+    this.mapObstacles = new MapObstacles(this);
+    this.obstacleGroup = this.mapObstacles.createObstacles();
+
+    this.physics.add.collider(
+      this.player,
+      this.obstacleGroup,
+      undefined,
+      undefined,
+      this,
+    );
+
     // Add objects using ObjectManager
     this.objectManager.createObject(200, 150, 'object', () => {
       console.log('Interacted with object at (200, 150)!');
@@ -98,13 +118,16 @@ export class Game extends Scene {
     });
 
     // Set up input keys
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.interactionKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.E,
-    );
-    this.journalKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.J,
-    );
+    if( this.input.keyboard != null) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+      this.journalKey = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.J,
+      );
+      this.wKey = this.input.keyboard.addKey("w");
+      this.sKey = this.input.keyboard.addKey("s");
+      this.aKey = this.input.keyboard.addKey("a");
+      this.dKey = this.input.keyboard.addKey("d");
+    }
 
     /* this.input.once('pointerdown', () => {
       this.scene.start('GameOver');
@@ -144,18 +167,18 @@ export class Game extends Scene {
     this.player.setVelocity(0);
 
     // Horizontal movement
-    if (this.cursors.left?.isDown) {
+    if (this.cursors.left?.isDown || this.aKey.isDown) {
       this.player.setVelocityX(-speed);
       this.player.flipX = true;
-    } else if (this.cursors.right?.isDown) {
+    } else if (this.cursors.right?.isDown || this.dKey.isDown) {
       this.player.setVelocityX(speed);
       this.player.flipX = false;
     }
 
     // Vertical movement
-    if (this.cursors.up?.isDown) {
+    if (this.cursors.up?.isDown || this.wKey.isDown) {
       this.player.setVelocityY(-speed);
-    } else if (this.cursors.down?.isDown) {
+    } else if (this.cursors.down?.isDown || this.sKey.isDown) {
       this.player.setVelocityY(speed);
     }
 
