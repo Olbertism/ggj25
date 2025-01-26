@@ -3,6 +3,8 @@ import Phaser from 'phaser';
 export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
   private interactionHint: Phaser.GameObjects.Text;
   private canInteract: boolean = false;
+  private collisionSound: Phaser.Sound.BaseSound;
+  private soundPlayed: boolean = false;
 
   constructor(
     scene: Phaser.Scene,
@@ -11,6 +13,7 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     texture: string,
     scale?: number,
     isAnimated?: boolean,
+    collisionSoundKey?: string,
   ) {
     super(scene, x, y, texture);
 
@@ -22,6 +25,10 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     isAnimated && this.play(texture, true);
 
     scene.physics.add.collider(scene.player, this, undefined, undefined, scene);
+    if (collisionSoundKey) {
+      this.collisionSound = scene.sound.add(collisionSoundKey);
+  }
+
 
     // Create an interaction hint
     this.interactionHint = scene.add
@@ -56,10 +63,16 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     if (this.canInteract) {
       onInteract();
     }
+    if (this.collisionSound && !this.soundPlayed) {
+      console.log("play: "+ this.collisionSound);
+      this.collisionSound.play();
+      this.soundPlayed = true;
+  }
   }
 
   handleExitProximity() {
     this.interactionHint.setVisible(false);
     this.canInteract = false;
+    this.soundPlayed = false;
   }
 }

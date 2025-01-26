@@ -30,6 +30,7 @@ export class Game extends Scene {
   bubbleContainer: Phaser.GameObjects.Container;
   bubbleZone: Phaser.GameObjects.Rectangle;
   bubbleBody: Phaser.FX.Circle;
+  bubble: Phaser.Physics.Arcade.Sprite;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
 
@@ -98,6 +99,10 @@ export class Game extends Scene {
     if (!this.registry.has('actionHandler')) {
       this.registry.set('actionHandler', new ActionHandler());
     }
+
+    const bgMusic = this.sound.add('bg_music');
+        bgMusic.loop = true;
+        bgMusic.play();
 
     const actionHandler: ActionHandler = this.registry.get('actionHandler');
 
@@ -250,36 +255,36 @@ export class Game extends Scene {
     // ### Interactable objects ####
 
     // Bubble
-    this.objectManager.createObject(1230, 1100, 'bubble', () => {
+    this.bubble = this.objectManager.createObject(1230, 1100, 'bubble', () => {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     }, 1, true);
+    this.bubble.sound = this.sound.add("bubble_rumble", { loop: true });
     // .preFX?.addGlow(0x8a1adb)
 
     // Camera
     this.objectManager.createObject(1500, 1400, 'camera', () => {
       console.log('Interacted with camera at (1500, 1400)!');
       eventsCenter.emit('toggleInteraction', cameraData);
-    });
-
+    },1, false, "camera_click");
 
     // Ray installation
     this.objectManager.createObject(800, 1000, 'lamp', () => {
       console.log('Interacted with rays at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', rayMachineData);
-    }, 1.5);
+    }, 1.5, false, "lamp_on");
 
     // Lab Rat
     this.objectManager.createObject(515, 1500, 'lab-rat', () => {
       console.log('Interacted with lab rat at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', labRatData);
-    });
+    },1, false, "rat-squeak");
 
     // Computer
     this.objectManager.createObject(570, 1350, 'computer', () => {
       console.log('Interacted with computer at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', computerData);
-    });
+    },1, false, "keyboard");
 
     // Guard 1
     this.objectManager.createObject(
@@ -292,6 +297,7 @@ export class Game extends Scene {
       },
       0.8,
       true,
+      "gasp",
     );
 
     // Guard 2
@@ -305,7 +311,7 @@ export class Game extends Scene {
       },
       0.8,
       true,
-      true
+      "gasp",
     );
     //oldman
     this.objectManager.createObject(
@@ -317,7 +323,8 @@ export class Game extends Scene {
         eventsCenter.emit('toggleInteraction', oldManData);
       },
       0.9,
-      true
+      true,
+      'murmur'
     );
 //old woman
     this.objectManager.createObject(
@@ -433,6 +440,23 @@ export class Game extends Scene {
       if (this.player.anims.currentAnim?.key !== 'idle') {
         this.player.play('idle', true);
       }
+    }
+    //update sounds on proximity:
+      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.bubble.x, this.bubble.y);
+      const range = 450;
+      if (distance < range) {
+        const volume = 1 - distance / range;
+
+        if (this.bubble.sound && this.bubble.sound instanceof Phaser.Sound.WebAudioSound) {
+          this.bubble.sound.setVolume(volume);
+            if (!this.bubble.sound.isPlaying) {
+              this.bubble.sound.play();
+            }
+        }
+    } else {
+        if (this.bubble.sound && this.bubble.sound.isPlaying) {
+          this.bubble.sound.stop();
+        }
     }
   }
 }
