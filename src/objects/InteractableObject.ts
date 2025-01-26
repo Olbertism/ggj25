@@ -127,6 +127,7 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
   private generateRandomPath(numPoints: number): Phaser.Curves.Path {
     const path = new Phaser.Curves.Path(this.x, this.y);
 
+    console.log("random path generated");
     for (let i = 0; i < numPoints; i++) {
       const x = Phaser.Math.Between(this.x - 300, this.x + 300);
       const y = Phaser.Math.Between(this.y - 300, this.y + 300);
@@ -149,10 +150,10 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
         y: this.path.getPoint(1).y,
         repeat: 0,
         onComplete: () => {
-          this.isInteracting = false;
+          //this.isInteracting = false;
           this.play(this.idleAnim, true);
           scene.time.addEvent({
-            delay: Phaser.Math.Between(1000, 5000), // Random delay before moving again
+            delay: Phaser.Math.Between(20000, 40000), // Random delay before moving again
             callback: () => {
               this.moveAlongRandomPath(scene); // Repeat move after idle
             },
