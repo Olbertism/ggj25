@@ -1,6 +1,15 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
-import { bubbleData } from '../data/store';
+import {
+  bubbleData,
+  cameraData,
+  computerData,
+  guardData,
+  labRatData,
+  oldManData,
+  oldWomanData,
+  rayMachineData
+} from '../data/store';
 import { MapObstacles } from '../gameObjects/MapObstacles.ts';
 import { Npc } from '../gameObjects/Npc';
 import { ActionHandler } from '../objects/ActionHandler.ts';
@@ -172,7 +181,6 @@ export class Game extends Scene {
        repeat: -1,
      });
 
-
     //cat sprites
     this.anims.create({
       key: 'catIdle',
@@ -199,7 +207,7 @@ export class Game extends Scene {
 
     this.movementEnabled = true;
 
-    //add npcs to the sceene:
+    //add npcs to the scene:
     // Create NPC instances
     this.npcGroup = this.physics.add.staticGroup();
     const npc1 = new Npc(
@@ -252,17 +260,18 @@ export class Game extends Scene {
       eventsCenter.emit('toggleInteraction', bubbleData);
     }, 1, true);
     this.bubble.sound = this.sound.add("bubble_rumble", { loop: true });
+    // .preFX?.addGlow(0x8a1adb)
 
     // Camera
     this.objectManager.createObject(1500, 1400, 'camera', () => {
       console.log('Interacted with camera at (1500, 1400)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
+      eventsCenter.emit('toggleInteraction', cameraData);
     },1, false, "camera_click");
 
     // Ray installation
     this.objectManager.createObject(800, 1000, 'lamp', () => {
       console.log('Interacted with rays at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
+      eventsCenter.emit('toggleInteraction', rayMachineData);
     }, 1.5, false, "lamp_on");
 
     // Lab Rat
@@ -274,7 +283,7 @@ export class Game extends Scene {
     // Computer
     this.objectManager.createObject(570, 1350, 'computer', () => {
       console.log('Interacted with computer at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
+      eventsCenter.emit('toggleInteraction', computerData);
     },1, false, "keyboard");
 
     // Guard 1
@@ -284,7 +293,7 @@ export class Game extends Scene {
       'npcIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', guardData);
       },
       0.8,
       true,
@@ -298,7 +307,7 @@ export class Game extends Scene {
       'npcIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', () => {});
       },
       0.8,
       true,
@@ -311,7 +320,7 @@ export class Game extends Scene {
       'oldManIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', oldManData);
       },
       0.9,
       true,
@@ -324,7 +333,7 @@ export class Game extends Scene {
       'oldWomanIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', oldWomanData);
       },
       0.9,
       true
@@ -374,7 +383,7 @@ export class Game extends Scene {
       this.scene.stop('InteractionUi');
       this.scene.stop('JournalUi');
       this.scene.stop('KeyLegendUi');
-      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), totalPoints: this.actionHandler.getTotalPoints()});
+      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), results: this.actionHandler.getResults()});
     })
   }
 
@@ -436,10 +445,10 @@ export class Game extends Scene {
       const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.bubble.x, this.bubble.y);
       const range = 450;
       if (distance < range) {
-        const volume = 1 - distance / range; 
+        const volume = 1 - distance / range;
 
         if (this.bubble.sound && this.bubble.sound instanceof Phaser.Sound.WebAudioSound) {
-          this.bubble.sound.setVolume(volume); 
+          this.bubble.sound.setVolume(volume);
             if (!this.bubble.sound.isPlaying) {
               this.bubble.sound.play();
             }

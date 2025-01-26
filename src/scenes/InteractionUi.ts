@@ -1,5 +1,5 @@
 import {Scene} from 'phaser';
-import {basicDataObject} from '../data/store';
+import {actionObject, basicDataObject} from '../data/store';
 import eventsCenter from './EventsCenter';
 import {ActionHandler} from "../objects/ActionHandler.ts";
 
@@ -12,6 +12,7 @@ export class InteractionUi extends Scene {
   actionButtons: Phaser.GameObjects.Text[] = [];
   isInteractionOpen: boolean = false;
   actionHandler: ActionHandler;
+  actionsTaken: Array<any>;
 
   constructor() {
     super({ key: 'InteractionUi', active: false });
@@ -19,6 +20,7 @@ export class InteractionUi extends Scene {
 
   create() {
     this.actionHandler = this.registry.get('actionHandler');
+    this.actionsTaken = [];
 
     //  Listen for events from it
     eventsCenter.on('toggleInteraction', this.toggleInteraction, this);
@@ -55,7 +57,7 @@ export class InteractionUi extends Scene {
         .text(150, -150, '', {
           fontSize: '16px',
           color: '#ffffff',
-          wordWrap: { width: 280 },
+          wordWrap: { width: 600 },
         })
         .setOrigin(0.5);
 
@@ -63,7 +65,7 @@ export class InteractionUi extends Scene {
         .text(150, -75, '', {
           fontSize: '16px',
           color: '#ffffff',
-          wordWrap: { width: 280 },
+          wordWrap: { width: 600 },
         })
         .setOrigin(0.5);
 
@@ -71,7 +73,7 @@ export class InteractionUi extends Scene {
         .text(150, 0, '', {
           fontSize: '16px',
           color: '#ffffff',
-          wordWrap: { width: 280 },
+          wordWrap: { width: 600 },
         })
         .setOrigin(0.5);
 
@@ -100,10 +102,27 @@ export class InteractionUi extends Scene {
       this.initDialogBox();
       this.uiTitle.setText(data.title);
       this.uiMessage.setText(data.message);
-      data.actions.length > 0 &&
-        data.actions.forEach((action, index) => {
+
+      // Destroy existing buttons
+      this.actionButtons.forEach(button => button.destroy());
+      this.actionButtons = [];
+
+      this.actionsTaken = this.actionHandler.getActionsTaken();
+      // Filter actions for not used and repeatable ones
+      const fd = data.actions.filter(
+        (action) =>
+            // Action is not in actionsTaken OR it is repeatable
+            !this.actionsTaken.some(
+                (taken) => taken.key === action.key && action.repeatable !== true
+            ) &&
+            // If the action has a 'requires' field, ensure the required key exists in actionsTaken
+            (!action.requires || this.actionsTaken.some((taken) => taken.key === action.requires))
+      );
+      // Create action buttons
+      fd.length > 0 &&
+        fd.forEach((action, index) => {
           const actionButton = this.add
-            .text(150, -20 + index * 40, action.label, {
+            .text(150, -100 + index * 40, action.label, {
               fontSize: '18px',
               color: '#ffffff',
               backgroundColor: '#444444',
@@ -115,7 +134,6 @@ export class InteractionUi extends Scene {
           this.actionButtons.push(actionButton);
         });
 
-
       this.uiBox.add(this.actionButtons);
 
       this.uiBox.setVisible(true);
@@ -123,7 +141,7 @@ export class InteractionUi extends Scene {
     }
   }
 
-  private takeAction (action: any) {
+  private takeAction (action: actionObject) {
     eventsCenter.emit('action-event', action );
     this.actionButtons.forEach(button => button.destroy());
     this.actionButtons = []; // Clear the array
