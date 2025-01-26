@@ -65,6 +65,12 @@ export class ActionHandler {
         );
       }
       amountOfTakenActions = 0;
+      this.actionsTaken.push({
+        key: action.key,
+        label: action.label,
+        points: points,
+        repeatable: action.repeatable,
+      });
       return;
     } else {
       points = Math.floor(

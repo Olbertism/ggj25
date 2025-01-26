@@ -46,7 +46,7 @@ export const bubbleData: basicDataObject = {
       pointRange: [2, 3],
       effect:
         'It feels silly, but you hum the melody to the bubble. At first, it remains unchanged, but once you got a bit closer, you see small ripples on its surface. Something is happening...',
-      requires: ['ask-old-woman-dream'],
+      requires: ['ask-old-woman-dreams'],
     },
   ],
 };
