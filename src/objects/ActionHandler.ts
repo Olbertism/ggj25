@@ -11,10 +11,9 @@ export class ActionHandler {
   constructor(events: Phaser.Events.EventEmitter) {
     this.totalScore = 0; // Initialize totalScore
     this.actionsTaken = []; // Initialize actionsTaken
-    this.maxActions = 4;
-    /* this.maxActions = Math.floor(
+    this.maxActions = Math.floor(
       Math.random() * (Math.floor(11) - Math.ceil(8)) + Math.ceil(8),
-    ); */
+    );
     this.positiveThreshold = Math.floor(
       Math.random() * (Math.floor(12) - Math.ceil(6)) + Math.ceil(6),
     );
