@@ -31,11 +31,9 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
 
     // Add the object to the scene
     scene.add.existing(this);
-    // scene.physics.add.existing(this, true);
-    if(walkAnim){
+    if (walkAnim) {
       scene.physics.add.existing(this, false);
-    }
-    else{
+    } else {
       scene.physics.add.existing(this, true);
     }
     isAnimated && this.play(idleAnim ? idleAnim : texture, true);
@@ -71,38 +69,34 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     player: Phaser.Physics.Arcade.Sprite,
     onInteract: () => void,
   ) {
-    //console.log('handleProximity');
+    console.log('handleProx', this.canInteract);
     if (!this.canInteract) {
       this.interactionHint.setVisible(true);
       this.canInteract = true;
 
       // Listen for interaction key
-      console.log('listener...');
       this.scene.input.keyboard.on('keydown-E', () => {
-        console.log('e down');
         this.handleInteraction(onInteract);
       });
     }
   }
 
   updateHintPosition() {
-    if (this.interactionHint) { 
+    if (this.interactionHint) {
       this.interactionHint.setPosition(this.x - 40, this.y - 10);
     }
   }
 
   handleInteraction(onInteract: () => void) {
-    console.log("handle interaction was called");
+    console.log('handleInteraction', this.canInteract);
     this.isInteracting = true;
     if (this.canInteract) {
       onInteract();
     }
     if (this.collisionSound && !this.soundPlayed) {
-      console.log('play: ' + this.collisionSound);
       this.collisionSound.play();
       this.soundPlayed = true;
     }
-    console.log(this.moveTween);
     if (this.scene.tweens.isTweening(this)) {
       this.moveTween.pause();
       this.play(this.idleAnim, true);
@@ -115,13 +109,11 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     this.canInteract = false;
     this.soundPlayed = false;
     if (this.moveTween && this.moveTween.isPaused()) {
-      console.log("should restart");
       this.moveAlongRandomPath(this.scene); // Resume the movement
     }
   }
 
   private startBehavior(scene: Phaser.Scene) {
-    console.log("startbeh was called");
     this.play(this.idleAnim, true);
     if (!this.walkAnim) return;
     scene.time.addEvent({
@@ -138,8 +130,8 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     const path = new Phaser.Curves.Path(this.x, this.y);
 
     for (let i = 0; i < numPoints; i++) {
-      const x = Phaser.Math.Between(this.x-300, this.x+300);
-      const y = Phaser.Math.Between(this.y-300, this.y+300);
+      const x = Phaser.Math.Between(this.x - 300, this.x + 300);
+      const y = Phaser.Math.Between(this.y - 300, this.y + 300);
       path.lineTo(x, y);
     }
     return path;
@@ -150,7 +142,7 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     this.path = this.generateRandomPath(5);
     if (!this.walkAnim) return;
     this.play(this.walkAnim, true);
-    if(!this.isInteracting){
+    if (!this.isInteracting) {
       this.moveTween = scene.tweens.add({
         targets: this,
         ease: 'Linear',
@@ -171,7 +163,7 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
         },
         onUpdate: () => {
           this.updateHintPosition();
-          if (this.path.getPoint(1).x < this.x) {
+          if (this.path && this.path.getPoint(1).x < this.x) {
             this.setFlipX(true);
           } else {
             this.setFlipX(false);
@@ -182,8 +174,7 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    console.log("update is being triggeerd");
-    if(this.walkAnim){
+    if (this.walkAnim) {
       this.updateHintPosition();
     }
   }

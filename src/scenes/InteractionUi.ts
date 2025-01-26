@@ -28,6 +28,7 @@ export class InteractionUi extends Scene {
     // clean up when Scene is shutdown
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       eventsCenter.off('toggleInteraction', this.toggleInteraction, this);
+      this.isInteractionOpen = false;
     });
 
     this.initDialogBox();
@@ -93,7 +94,6 @@ export class InteractionUi extends Scene {
   }
 
   private toggleInteraction(data: basicDataObject) {
-    console.log('toggle', data);
     if (this.isInteractionOpen) {
       eventsCenter.emit('enableMovement');
       // Close
@@ -104,6 +104,7 @@ export class InteractionUi extends Scene {
       this.actionButtons = [];
     } else {
       // Open dialog box
+      this.isInteractionOpen = true;
       eventsCenter.emit('disableMovement');
       this.initDialogBox();
       this.uiTitle.setText(data.title);
@@ -145,9 +146,7 @@ export class InteractionUi extends Scene {
         });
 
       this.uiBox.add(this.actionButtons);
-
       this.uiBox.setVisible(true);
-      this.isInteractionOpen = true;
     }
   }
 
