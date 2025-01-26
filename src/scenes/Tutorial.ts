@@ -15,7 +15,7 @@ export class Tutorial extends Scene {
       .text(
         512,
         140,
-        'Your task is to research the anomaly and find out new things about it. You have been supplied with some materials about it and are free to take various kinds of actions. It is up to you to discern, which information or action makes sense, and which not. Some interactions will open up new options, some might lead you astray.',
+        'Your task is to research the anomaly and uncover new insights about it. You have been provided with some materials and are free to take various actions. It is up to you to determine which information or actions are meaningful and which are not. Some interactions may open up new opportunities, while others might lead you astray.',
         {
           wordWrap: { width: 900 },
           fontSize: 20,
