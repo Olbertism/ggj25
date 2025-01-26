@@ -8,7 +8,7 @@ import {
   labRatData,
   oldManData,
   oldWomanData,
-  rayMachineData
+  rayMachineData,
 } from '../data/store';
 import { MapObstacles } from '../gameObjects/MapObstacles.ts';
 import { Npc } from '../gameObjects/Npc';
@@ -79,7 +79,7 @@ export class Game extends Scene {
 
     //bubble:
     this.load.spritesheet('bubble', 'assets/bubble_sprite.png', {
-      frameWidth:256,
+      frameWidth: 256,
       frameHeight: 280,
     });
 
@@ -101,8 +101,8 @@ export class Game extends Scene {
     }
 
     const bgMusic = this.sound.add('bg_music');
-        bgMusic.loop = true;
-        bgMusic.play();
+    bgMusic.loop = true;
+    bgMusic.play();
 
     const actionHandler: ActionHandler = this.registry.get('actionHandler');
 
@@ -172,14 +172,14 @@ export class Game extends Scene {
     });
 
     //bubble
-     this.anims.create({
-       key: 'bubble',
-       frames: this.anims.generateFrameNumbers('bubble', {
-         frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-       }),
-       frameRate: 4,
-       repeat: -1,
-     });
+    this.anims.create({
+      key: 'bubble',
+      frames: this.anims.generateFrameNumbers('bubble', {
+        frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      }),
+      frameRate: 4,
+      repeat: -1,
+    });
 
     //cat sprites
     this.anims.create({
@@ -221,7 +221,7 @@ export class Game extends Scene {
       '',
       false,
     );
-    const cat = new Npc(
+    /* const cat = new Npc(
       this,
       500,
       700,
@@ -231,16 +231,16 @@ export class Game extends Scene {
       'catIdle',
       'catWalk',
       true,
-    );
+    ); */
 
     // Add NPCs to a group for easier management
     this.npcGroup.add(npc1);
 
     //ad cat to scene:
-    this.add.existing(cat);
-    this.physics.add.existing(cat);
+    // this.add.existing(cat);
+    // this.physics.add.existing(cat);
 
-     // add bounding boxes for map objects
+    // add bounding boxes for map objects
     this.mapObstacles = new MapObstacles(this);
     this.obstacleGroup = this.mapObstacles.createObstacles();
 
@@ -255,12 +255,18 @@ export class Game extends Scene {
     // ### Interactable objects ####
 
     // Bubble
-    this.bubble = this.objectManager.createObject(1230, 1100, 'bubble', () => {
-      console.log('Interacted with bubble at (1230, 1100)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
-    }, 1, true);
-    this.bubble.sound = this.sound.add("bubble_rumble", { loop: true });
-    // .preFX?.addGlow(0x8a1adb)
+    this.bubble = this.objectManager.createObject(
+      1230,
+      1100,
+      'bubble',
+      () => {
+        console.log('Interacted with bubble at (1230, 1100)!');
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      1,
+      true,
+    );
+    this.bubble.sound = this.sound.add('bubble_rumble', { loop: true });
 
     // Camera
     this.objectManager.createObject(1500, 1400, 'camera', () => {
@@ -275,10 +281,18 @@ export class Game extends Scene {
     }, 1.5, false, "lamp_on");
 
     // Lab Rat
-    this.objectManager.createObject(515, 1500, 'lab-rat', () => {
-      console.log('Interacted with lab rat at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', labRatData);
-    },1, false, "rat-squeak");
+    this.objectManager.createObject(
+      515,
+      1500,
+      'lab-rat',
+      () => {
+        console.log('Interacted with lab rat at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', labRatData);
+      },
+      1,
+      false,
+      'rat-squeak',
+    );
 
     // Computer
     this.objectManager.createObject(570, 1350, 'computer', () => {
@@ -297,7 +311,7 @@ export class Game extends Scene {
       },
       0.8,
       true,
-      "gasp",
+      'gasp',
     );
 
     // Guard 2
@@ -311,7 +325,7 @@ export class Game extends Scene {
       },
       0.8,
       true,
-      "gasp",
+      'gasp',
     );
     //oldman
     this.objectManager.createObject(
@@ -324,9 +338,9 @@ export class Game extends Scene {
       },
       0.9,
       true,
-      'murmur'
+      'murmur',
     );
-//old woman
+    //old woman
     this.objectManager.createObject(
       1260,
       630,
@@ -336,7 +350,21 @@ export class Game extends Scene {
         eventsCenter.emit('toggleInteraction', oldWomanData);
       },
       0.9,
-      true
+      true,
+    );
+
+    //cat
+    this.objectManager.createObject(
+      500,
+      700,
+      'catIdle',
+      () => {
+        eventsCenter.emit('toggleInteraction', bubbleData);
+      },
+      1.5,
+      true,
+      'rat-squeak',
+      'catIdle',
     );
 
     this.physics.add.collider(
@@ -346,9 +374,9 @@ export class Game extends Scene {
       undefined,
       this,
     );
-    this.physics.add.collider(this.player, cat, undefined, undefined, this);
-    this.physics.add.collider(npc1, cat, undefined, undefined, this);
-    this.physics.add.collider(cat, this.player, undefined, undefined, this);
+    // this.physics.add.collider(this.player, cat, undefined, undefined, this);
+    // this.physics.add.collider(npc1, cat, undefined, undefined, this);
+    // this.physics.add.collider(cat, this.player, undefined, undefined, this);
 
     // Set up input keys
     if (this.input.keyboard != null) {
@@ -454,9 +482,9 @@ export class Game extends Scene {
             }
         }
     } else {
-        if (this.bubble.sound && this.bubble.sound.isPlaying) {
-          this.bubble.sound.stop();
-        }
+      if (this.bubble.sound && this.bubble.sound.isPlaying) {
+        this.bubble.sound.stop();
+      }
     }
   }
 }
