@@ -52,8 +52,16 @@ export class JournalUi extends Scene {
 
     // Title of the journal
     const journalTitle = this.add
-      .text(0, -320, 'Journal', {
+      .text(0, -340, 'Journal', {
         fontSize: '32px',
+        color: '#ffffff',
+      })
+      .setOrigin(0.5);
+
+    // Title of the journal
+    const journalSubHeadline = this.add
+      .text(0, -310, 'Your intern hastily collected material for you.', {
+        fontSize: '16px',
         color: '#ffffff',
       })
       .setOrigin(0.5);
@@ -311,6 +319,7 @@ export class JournalUi extends Scene {
     this.journal.add([
       journalBg,
       journalTitle,
+      journalSubHeadline,
       ...tabButtons,
       this.journalContent,
     ]);

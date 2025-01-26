@@ -10,8 +10,28 @@ export class ObjectManager {
 
   constructor(private scene: Phaser.Scene) {}
 
-  createObject(x: number, y: number, texture: string, onInteract: () => void, scale?: number, isAnimated?: boolean, sound?:string) {
-    const object = new InteractableObject(this.scene, x, y, texture, scale, isAnimated, sound);
+  createObject(
+    x: number,
+    y: number,
+    texture: string,
+    onInteract: () => void,
+    scale?: number,
+    isAnimated?: boolean,
+    sound?: string,
+    idleAnim?: string,
+    walkAnim?: string,
+  ) {
+    const object = new InteractableObject(
+      this.scene,
+      x,
+      y,
+      texture,
+      scale,
+      isAnimated,
+      sound,
+      idleAnim,
+      walkAnim,
+    );
     const { width, height } = object.getBounds();
     const rect = new Phaser.GameObjects.Rectangle(
       this.scene,
@@ -21,7 +41,6 @@ export class ObjectManager {
       height + 30,
     ).setOrigin(0.5);
     this.scene.physics.add.existing(rect);
-    console.log(object.getBounds());
     this.objects.push({ object: object, rect: rect });
 
     // Add overlap detection

@@ -5,44 +5,48 @@ export const bubbleData: basicDataObject = {
     {
       key: 'step-into-bubble',
       label: 'Step into the bubble',
-      pointRange: [],
-      effect: 'Test',
+      pointRange: [0, 0],
+      effect: 'You boldly step into the bubble...',
+      leadsTo: '',
     },
     {
       key: 'take-measurements',
       label: 'Take measurements',
-      pointRange: [],
-      effect: '',
+      pointRange: [0, 1],
+      effect:
+        'No interesting readings in temperature, humidity, air pressure, radiation. However, you feel a weird humming buzzing next to the bubble. Is this a real sound, or just in your head?',
       repeatable: true,
     },
     {
       key: 'sample-soil',
       label: 'Take soil sample next to the bubble',
-      pointRange: [],
-      effect: '',
+      pointRange: [1, 3],
+      effect:
+        'You sample the soil from the crater. Nothing unusual in regards to its composition, but the crater seems shaped in a slight circular pattern',
       repeatable: true,
     },
     {
       key: 'throw-rock',
-      label: 'Throw a rock',
-      pointRange: [],
-      effect: '',
+      label: 'Throw a rock into the bubble',
+      pointRange: [-2, 0],
+      effect:
+        "The rock passes through the bubble. You don't observe any special.",
     },
   ],
 };
 
 export const catData: basicDataObject = {
-  title: "You know you want to!",
+  title: 'You know you want to!',
   message: "This is Lajos. He's a cat. Better pet the cat.",
-  actions:[
-      {
-        key: 'pet-the-cat',
-        label: 'Pet the cat',
-        pointRange: [0,0],
-        effect: "Lajos is happy. You're acceptable.",
+  actions: [
+    {
+      key: 'pet-the-cat',
+      label: 'Pet the cat',
+      pointRange: [0, 0],
+      effect: "Lajos is happy. You're acceptable.",
     },
   ],
-}
+};
 
 export const labRatData: basicDataObject = {
   title: 'A cage with a lab rat',
@@ -52,8 +56,9 @@ export const labRatData: basicDataObject = {
     {
       key: 'toss-rat',
       label: 'Toss the rat into the bubble',
-      pointRange: [],
-      effect: '',
+      pointRange: [-2, -1],
+      effect:
+        'The rat disappears in the bubble. The attached sensors are left behind. They show no change readings. As if nothing happened. But what about the rat?',
     },
   ],
 };
@@ -73,21 +78,23 @@ export const computerData: basicDataObject = {
     {
       key: 'yt-videos',
       label: 'Try to find witness account on social media',
-      pointRange: [-2, 1],
-      effect: "There were some promising videos, but you can't really rely on this information.",
+      pointRange: [-2, -1],
+      effect:
+        "There were some promising videos, but you can't really rely on this information.",
     },
     {
       key: 'journals',
       label: 'Search through scientific journals',
-      pointRange: [-3, 3],
-      effect: "These things are difficult to study. You gain less information than you'd hope for.",
+      pointRange: [-1, 0],
+      effect: 'Your interns already provided you with material in your journal',
       repeatable: true,
     },
     {
       key: 'historical-documents',
-      label: 'Search through historical documents',
-      pointRange: [3,5],
-      effect: "Could it be that something like this had happened before? But what was the outcome???",
+      label: 'Search through historical documents of this place',
+      pointRange: [2, 4],
+      effect:
+        'You hope to find more information in this place. Maybe the placement of the bubble follows a reason?',
       requires: 'journals',
     },
   ],
@@ -101,7 +108,7 @@ export const cameraData: basicDataObject = {
     {
       key: 'analyze-footage',
       label: 'Analyze the footage of the last hours',
-      pointRange: [-1,1],
+      pointRange: [-1, 1],
       effect:
         'A lot of people tried that before and learned nothing from it. You are no exception.',
     },
@@ -115,7 +122,7 @@ export const guardData: basicDataObject = {
     {
       key: 'talk-to-guard',
       label: 'Talk to the guard',
-      pointRange: [],
+      pointRange: [0, 0],
       effect:
         'You had a nice chat about the weather and the peculiar state of the world, but nothing more.',
     },
@@ -130,23 +137,23 @@ export const oldManData: basicDataObject = {
     {
       key: 'ask-old-man-life',
       label: 'Ask the old man about life next to the bubble',
-      pointRange: [],
+      pointRange: [-1, 1],
       effect:
         'The old man complains a lot about the quarantine and demands you take action to lift it as soon as possible.',
     },
     {
       key: 'ask-old-man-health',
       label: 'Ask the old man about his current wellbeing',
-      pointRange: [],
+      pointRange: [0, 1],
       effect:
-        'You had a nice chat about the weather and the peculiar state of the world, but nothing more.',
+        "The old man complains that ever since that thing appeared, he is having headaches. Also his back hurts more than usual and he feels a lot more stressed. He demands his doctor, but because of the quarantine, they don't let him visit him.",
     },
     {
       key: 'ask-old-man-opinion',
       label: 'Ask the old man what he thinks the bubble is',
-      pointRange: [],
+      pointRange: [0, 0],
       effect:
-        'You had a nice chat about the weather and the peculiar state of the world, but nothing more.',
+        '"Let me tell you, it is obvious to me that this is of intelligent design! There are a lot of smart people out there, that suggest that within this bubble lies a whole new realm of discovery. But you government scientists just want to keep it closed off and repeat useless measurements. Don\'t tell me you are not hiding something there!"',
     },
   ],
 };
@@ -158,25 +165,25 @@ export const oldWomanData: basicDataObject = {
   actions: [
     {
       key: 'ask-old-woman-life',
-      label: 'Ask the old man about life next to the bubble',
-      pointRange: [],
+      label: 'Ask the old woman about life next to the bubble',
+      pointRange: [0, 0],
       effect:
         'The old woman talks a lot about her current situation. The recent events seem to have excited her.',
     },
     {
       key: 'ask-old-woman-health',
-      label: 'Ask the old man about his current wellbeing',
-      pointRange: [],
+      label: 'Ask the old woman about his current wellbeing',
+      pointRange: [1, 2],
       effect:
-        'She surely has one or two ailments, but all in all she does not complain. You notice she wears a hearing implant',
+        'She surely has one or two ailments, but all in all she does not complain. You notice she wears a hearing implant.',
       leadsTo: '',
     },
     {
       key: 'ask-old-woman-opinion',
-      label: 'Ask the old man what he thinks the bubble is',
-      pointRange: [],
+      label: 'Ask the old woman what she thinks the bubble is',
+      pointRange: [2, 3],
       effect:
-        'You had a nice chat about the weather and the peculiar state of the world, but nothing more.',
+        'The woman does not say what she believes of the bubble. However, she mentions that ever since it appeared, she hears music in her dreams.',
     },
   ],
 };
@@ -196,19 +203,41 @@ export const rayMachineData: basicDataObject = {
     {
       key: 'fire-ir',
       label: 'Activate the IR-ray',
-      pointRange: [1,5],
+      pointRange: [1, 5],
       effect:
         'You expose the bubble to the IR-ray. The bubble does not seem to show any sign of temperature change. An interesting detail.',
     },
     {
       key: 'fire-laser',
       label: 'Activate the laser',
-      pointRange: [2,4],
+      pointRange: [2, 4],
       effect:
         'You expose the bubble to the laser. Your instruments record a tiny ripple in the surface matter of the bubble, as the laser is turned on.',
       leadsTo: '',
     },
+    {
+      key: 'emit-music',
+      label: 'Send music via the laser',
+      pointRange: [1, 2],
+      effect: '',
+      requires: ['fire-laser', 'ask-old-woman-opinion'],
+    },
   ],
+};
+
+export const unlockableActions = {
+  'heat-bubble': {
+    key: 'heat-bubble',
+    label: 'Warm up the area of the bubble',
+    pointRange: [1, 2],
+    effect: '',
+  },
+  'emit-music': {
+    key: 'emit-music',
+    label: 'Send music via the laser',
+    pointRange: [1, 2],
+    effect: '',
+  },
 };
 
 export interface basicDataObject {
@@ -224,7 +253,8 @@ export interface actionObject {
   effect: string;
   leadsTo?: string;
   repeatable?: boolean;
-  requires?: string;
+  requires?: string[];
+  locked?: boolean;
 }
 
 export interface journalReports {
