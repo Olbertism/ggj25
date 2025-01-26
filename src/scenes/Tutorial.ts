@@ -1,11 +1,11 @@
 import { GameObjects, Scene } from 'phaser';
 
-export class Intro extends Scene {
+export class Tutorial extends Scene {
   background: GameObjects.Image;
   title: GameObjects.Text;
 
   constructor() {
-    super('Intro');
+    super('Tutorial');
   }
 
   create() {
@@ -15,15 +15,17 @@ export class Intro extends Scene {
       .text(
         512,
         140,
-        'On May 29th, 2027, brilliant lights lit up the skies across both hemispheres, lasting only a fraction of a second. When they faded, the world was left with a profound mystery. Enormous, shimmering spheres appeared across the globe, their reflective surfaces reminiscent of soap bubbles.',
+        'Your task is to research the anomaly and find out new things about it. You have been supplied with some materials about it and are free to take various kinds of actions. It is up to you to discern, which information or action makes sense, and which not. Some interactions will open up new options, some might lead you astray.',
         {
           wordWrap: { width: 900 },
           fontSize: 20,
           align: 'left',
           lineSpacing: 5,
+          padding: { left: 5, right: 5, top: 5, bottom: 5 },
         },
       )
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setBackgroundColor('grey');
 
     this.add
       .text(
@@ -37,7 +39,8 @@ export class Intro extends Scene {
           lineSpacing: 5,
         },
       )
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setVisible(false);
 
     this.add
       .text(
@@ -51,15 +54,8 @@ export class Intro extends Scene {
           lineSpacing: 5,
         },
       )
-      .setOrigin(0.5);
-
-    this.add
-      .text(512, 575, 'Good luck, scientist.', {
-        fontSize: 20,
-        align: 'left',
-        lineSpacing: 5,
-      })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setVisible(false);
 
     this.add
       .text(850, 750, 'Click to continue...', {
@@ -72,7 +68,7 @@ export class Intro extends Scene {
       .setOrigin(0.5);
 
     this.input.once('pointerdown', () => {
-      this.scene.start('Tutorial');
+      this.scene.start('Game');
     });
   }
 }

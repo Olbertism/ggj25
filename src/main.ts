@@ -8,6 +8,7 @@ import { JournalUi } from './scenes/JournalUi';
 import { KeyLegendUi } from './scenes/KeyLegendUi';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
+import { Tutorial } from './scenes/Tutorial';
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
@@ -32,6 +33,7 @@ const config: Types.Core.GameConfig = {
     Preloader,
     MainMenu,
     Intro,
+    Tutorial,
     MainGame,
     JournalUi,
     KeyLegendUi,

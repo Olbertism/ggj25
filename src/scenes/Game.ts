@@ -403,6 +403,8 @@ export class Game extends Scene {
       (text: string, outcome: { victory: boolean }) => {
         console.log(text);
         this.scene.stop('Game');
+        this.scene.stop('Intro');
+        this.scene.stop('Tutorial');
         this.scene.stop('InteractionUi');
         this.scene.stop('JournalUi');
         this.scene.stop('KeyLegendUi');
