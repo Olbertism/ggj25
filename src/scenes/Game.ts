@@ -11,7 +11,6 @@ import {
   rayMachineData,
 } from '../data/store';
 import { MapObstacles } from '../gameObjects/MapObstacles.ts';
-import { Npc } from '../gameObjects/Npc';
 import { ActionHandler } from '../objects/ActionHandler.ts';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
@@ -210,28 +209,6 @@ export class Game extends Scene {
 
     this.movementEnabled = true;
 
-    //add npcs to the scene:
-    // Create NPC instances
-    this.npcGroup = this.physics.add.staticGroup();
-    const npc1 = new Npc(
-      this,
-      300,
-      300,
-      'npcIdle',
-      'Guard',
-      0.8,
-      'npcIdle',
-      '',
-      false,
-    );
-
-
-    // Add NPCs to a group for easier management
-    this.npcGroup.add(npc1);
-
-    //ad cat to scene:
-    // this.add.existing(cat);
-    // this.physics.add.existing(cat);
 
     // add bounding boxes for map objects
     this.mapObstacles = new MapObstacles(this);
@@ -258,8 +235,9 @@ export class Game extends Scene {
       },
       1,
       true,
-    ).preFX?.addColorMatrix().saturate(0.5);
+    );
     this.bubble.sound = this.sound.add('bubble_rumble', { loop: true });
+    this.bubble.preFX?.addColorMatrix().saturate(0.5);
 
     // Camera
     this.objectManager.createObject(1500, 1400, 'camera', () => {
@@ -268,7 +246,7 @@ export class Game extends Scene {
     },1, false, "camera_click").preFX?.addColorMatrix().saturate(-0.5);
 
     // Ray installation
-    this.objectManager.createObject(800, 1000, 'lamp', () => {
+    this.objectManager.createObject(700, 1100, 'lamp', () => {
       console.log('Interacted with rays at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', rayMachineData);
     }, 1.5, false, "lamp_on").preFX?.addColorMatrix().saturate(-0.5);
@@ -288,33 +266,19 @@ export class Game extends Scene {
     ).preFX?.addColorMatrix().saturate(-0.5);
 
     // Computer
-    this.objectManager.createObject(570, 1350, 'computer', () => {
+    this.objectManager.createObject(630, 1345, 'computer', () => {
       console.log('Interacted with computer at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', computerData);
-    },1, false, "keyboard").preFX?.addColorMatrix().saturate(-0.5);
+    },0.8, false, "keyboard").preFX?.addColorMatrix().saturate(-0.5);
 
     // Guard 1
     this.objectManager.createObject(
-      570,
-      460,
+      550,
+      600,
       'npcIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
         eventsCenter.emit('toggleInteraction', guardData);
-      },
-      0.8,
-      true,
-      'gasp',
-    ).preFX?.addColorMatrix().saturate(-0.5);
-
-    // Guard 2
-    this.objectManager.createObject(
-      370,
-      360,
-      'npcIdle',
-      () => {
-        console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', () => {});
       },
       0.8,
       true,
@@ -332,7 +296,7 @@ export class Game extends Scene {
       },
       0.9,
       true,
-      'murmur',
+      'oldman',
     ).preFX?.addColorMatrix().saturate(-0.5);
     //old woman
     this.objectManager.createObject(
@@ -345,6 +309,7 @@ export class Game extends Scene {
       },
       0.9,
       true,
+      "witch"
     ).preFX?.addColorMatrix().saturate(-0.5);
 
     //cat
@@ -362,16 +327,6 @@ export class Game extends Scene {
       'catWalk',
     );
 
-    this.physics.add.collider(
-      this.player,
-      this.npcGroup,
-      undefined,
-      undefined,
-      this,
-    );
-    // this.physics.add.collider(this.player, cat, undefined, undefined, this);
-    // this.physics.add.collider(npc1, cat, undefined, undefined, this);
-    // this.physics.add.collider(cat, this.player, undefined, undefined, this);
 
     // Set up input keys
     if (this.input.keyboard != null) {
