@@ -2,7 +2,8 @@ import { Scene } from 'phaser';
 import { background } from '../commons';
 import {
   bubbleData,
-  cameraData, catData,
+  cameraData,
+  catData,
   computerData,
   guardData,
   labRatData,
@@ -11,7 +12,6 @@ import {
   rayMachineData,
 } from '../data/store';
 import { MapObstacles } from '../gameObjects/MapObstacles.ts';
-import { Npc } from '../gameObjects/Npc';
 import { ActionHandler } from '../objects/ActionHandler.ts';
 import { ObjectManager } from '../objects/ObjectManager';
 import eventsCenter from './EventsCenter';
@@ -105,15 +105,14 @@ export class Game extends Scene {
 
     // Initialize ObjectManager
     this.objectManager = new ObjectManager(this);
-    this.actionHandler = actionHandler
+    this.actionHandler = actionHandler;
     const bgMusic = this.sound.add('bg_music');
     bgMusic.loop = true;
     bgMusic.play();
 
-
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
-    this.camera.postFX.addVignette(0.5,0.5, 0.99, 0.38);
+    this.camera.postFX.addVignette(0.5, 0.5, 0.99, 0.38);
 
     this.scene.run('JournalUi');
     this.scene.run('KeyLegendUi');
@@ -122,7 +121,6 @@ export class Game extends Scene {
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
-
 
     //player sprites
     this.anims.create({
@@ -210,29 +208,6 @@ export class Game extends Scene {
 
     this.movementEnabled = true;
 
-    //add npcs to the scene:
-    // Create NPC instances
-    this.npcGroup = this.physics.add.staticGroup();
-    const npc1 = new Npc(
-      this,
-      300,
-      300,
-      'npcIdle',
-      'Guard',
-      0.8,
-      'npcIdle',
-      '',
-      false,
-    );
-
-
-    // Add NPCs to a group for easier management
-    this.npcGroup.add(npc1);
-
-    //ad cat to scene:
-    // this.add.existing(cat);
-    // this.physics.add.existing(cat);
-
     // add bounding boxes for map objects
     this.mapObstacles = new MapObstacles(this);
     this.obstacleGroup = this.mapObstacles.createObstacles();
@@ -258,97 +233,130 @@ export class Game extends Scene {
       },
       1,
       true,
-    ).preFX?.addColorMatrix().saturate(0.5);
+    );
     this.bubble.sound = this.sound.add('bubble_rumble', { loop: true });
+    this.bubble.preFX?.addColorMatrix().saturate(0.5);
 
     // Camera
-    this.objectManager.createObject(1500, 1400, 'camera', () => {
-      console.log('Interacted with camera at (1500, 1400)!');
-      eventsCenter.emit('toggleInteraction', cameraData);
-    },1, false, "camera_click").preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        1500,
+        1400,
+        'camera',
+        () => {
+          console.log('Interacted with camera at (1500, 1400)!');
+          eventsCenter.emit('toggleInteraction', cameraData);
+        },
+        1,
+        false,
+        'camera_click',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     // Ray installation
-    this.objectManager.createObject(800, 1000, 'lamp', () => {
-      console.log('Interacted with rays at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', rayMachineData);
-    }, 1.5, false, "lamp_on").preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        700,
+        1100,
+        'lamp',
+        () => {
+          console.log('Interacted with rays at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', rayMachineData);
+        },
+        1.5,
+        false,
+        'lamp_on',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     // Lab Rat
-    this.objectManager.createObject(
-      515,
-      1500,
-      'lab-rat',
-      () => {
-        console.log('Interacted with lab rat at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', labRatData);
-      },
-      1,
-      false,
-      'rat-squeak',
-    ).preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        515,
+        1500,
+        'lab-rat',
+        () => {
+          console.log('Interacted with lab rat at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', labRatData);
+        },
+        1,
+        false,
+        'rat-squeak',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     // Computer
-    this.objectManager.createObject(570, 1350, 'computer', () => {
-      console.log('Interacted with computer at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', computerData);
-    },1, false, "keyboard").preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        630,
+        1345,
+        'computer',
+        () => {
+          console.log('Interacted with computer at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', computerData);
+        },
+        0.8,
+        false,
+        'keyboard',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     // Guard 1
-    this.objectManager.createObject(
-      570,
-      460,
-      'npcIdle',
-      () => {
-        console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', guardData);
-      },
-      0.8,
-      true,
-      'gasp',
-    ).preFX?.addColorMatrix().saturate(-0.5);
-
-    // Guard 2
-    this.objectManager.createObject(
-      370,
-      360,
-      'npcIdle',
-      () => {
-        console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', () => {});
-      },
-      0.8,
-      true,
-      'gasp',
-    ).preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        550,
+        600,
+        'npcIdle',
+        () => {
+          console.log('Interacted with guard at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', guardData);
+        },
+        0.8,
+        true,
+        'gasp',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     //oldman
-    this.objectManager.createObject(
-      1150,
-      630,
-      'oldManIdle',
-      () => {
-        console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', oldManData);
-      },
-      0.9,
-      true,
-      'murmur',
-    ).preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        1150,
+        630,
+        'oldManIdle',
+        () => {
+          console.log('Interacted with guard at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', oldManData);
+        },
+        0.9,
+        true,
+        'oldman',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
     //old woman
-    this.objectManager.createObject(
-      1260,
-      630,
-      'oldWomanIdle',
-      () => {
-        console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', oldWomanData);
-      },
-      0.9,
-      true,
-    ).preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        1260,
+        630,
+        'oldWomanIdle',
+        () => {
+          console.log('Interacted with guard at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', oldWomanData);
+        },
+        0.9,
+        true,
+        'witch',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     //cat
-    this.cat =this.objectManager.createObject(
+    this.cat = this.objectManager.createObject(
       1350,
       1650,
       'catIdle',
@@ -361,17 +369,6 @@ export class Game extends Scene {
       'catIdle',
       'catWalk',
     );
-
-    this.physics.add.collider(
-      this.player,
-      this.npcGroup,
-      undefined,
-      undefined,
-      this,
-    );
-    // this.physics.add.collider(this.player, cat, undefined, undefined, this);
-    // this.physics.add.collider(npc1, cat, undefined, undefined, this);
-    // this.physics.add.collider(cat, this.player, undefined, undefined, this);
 
     // Set up input keys
     if (this.input.keyboard != null) {
@@ -401,14 +398,23 @@ export class Game extends Scene {
       this.movementEnabled = true;
     });
 
-    eventsCenter.on('gameOver', () => {
-      this.scene.stop('Game');
-      this.scene.stop('InteractionUi');
-      this.scene.stop('JournalUi');
-      this.scene.stop('KeyLegendUi');
-      this.registry.destroy();
-      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), results: this.actionHandler.getResults()});
-    })
+    eventsCenter.on(
+      'gameOver',
+      (text: string, outcome: { victory: boolean }) => {
+        console.log(text);
+        this.scene.stop('Game');
+        this.scene.stop('InteractionUi');
+        this.scene.stop('JournalUi');
+        this.scene.stop('KeyLegendUi');
+        this.registry.destroy();
+        this.scene.start('GameOver', {
+          actionsTaken: this.actionHandler.getActionsTaken(),
+          results: this.actionHandler.getResults(),
+          message: text,
+          outcome: outcome,
+        });
+      },
+    );
   }
 
   update() {
@@ -467,17 +473,25 @@ export class Game extends Scene {
       }
     }
     //update sounds on proximity:
-      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.bubble.x, this.bubble.y);
-      const range = 450;
-      if (distance < range) {
-        const volume = 1 - distance / range;
+    const distance = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      this.bubble.x,
+      this.bubble.y,
+    );
+    const range = 450;
+    if (distance < range) {
+      const volume = 1 - distance / range;
 
-        if (this.bubble.sound && this.bubble.sound instanceof Phaser.Sound.WebAudioSound) {
-          this.bubble.sound.setVolume(volume);
-            if (!this.bubble.sound.isPlaying) {
-              this.bubble.sound.play();
-            }
+      if (
+        this.bubble.sound &&
+        this.bubble.sound instanceof Phaser.Sound.WebAudioSound
+      ) {
+        this.bubble.sound.setVolume(volume);
+        if (!this.bubble.sound.isPlaying) {
+          this.bubble.sound.play();
         }
+      }
     } else {
       if (this.bubble.sound && this.bubble.sound.isPlaying) {
         this.bubble.sound.stop();
