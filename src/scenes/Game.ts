@@ -1,6 +1,15 @@
 import { Scene } from 'phaser';
 import { background } from '../commons';
-import {bubbleData, cameraData} from '../data/store';
+import {
+  bubbleData,
+  cameraData,
+  computerData,
+  guardData,
+  labRatData,
+  oldManData,
+  oldWomanData,
+  rayMachineData
+} from '../data/store';
 import { MapObstacles } from '../gameObjects/MapObstacles.ts';
 import { Npc } from '../gameObjects/Npc';
 import { ActionHandler } from '../objects/ActionHandler.ts';
@@ -253,34 +262,23 @@ export class Game extends Scene {
       eventsCenter.emit('toggleInteraction', cameraData);
     });
 
-    // Old man
-    this.objectManager.createObject(1260, 630, 'old-man', () => {
-      console.log('Interacted with old man at (1230, 1100)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
-    });
-
-    // Old woman
-    this.objectManager.createObject(1150, 630, 'old-woman', () => {
-      console.log('Interacted with old woman at (1230, 1100)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
-    });
 
     // Ray installation
     this.objectManager.createObject(800, 1000, 'lamp', () => {
       console.log('Interacted with rays at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
+      eventsCenter.emit('toggleInteraction', rayMachineData);
     }, 1.5);
 
     // Lab Rat
     this.objectManager.createObject(515, 1500, 'lab-rat', () => {
       console.log('Interacted with lab rat at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
+      eventsCenter.emit('toggleInteraction', labRatData);
     });
 
     // Computer
     this.objectManager.createObject(570, 1350, 'computer', () => {
       console.log('Interacted with computer at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', bubbleData);
+      eventsCenter.emit('toggleInteraction', computerData);
     });
 
     // Guard 1
@@ -290,7 +288,7 @@ export class Game extends Scene {
       'npcIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', guardData);
       },
       0.8,
       true,
@@ -303,7 +301,7 @@ export class Game extends Scene {
       'npcIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', () => {});
       },
       0.8,
       true,
@@ -316,7 +314,7 @@ export class Game extends Scene {
       'oldManIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', oldManData);
       },
       0.9,
       true
@@ -328,7 +326,7 @@ export class Game extends Scene {
       'oldWomanIdle',
       () => {
         console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', oldWomanData);
       },
       0.9,
       true
@@ -378,7 +376,7 @@ export class Game extends Scene {
       this.scene.stop('InteractionUi');
       this.scene.stop('JournalUi');
       this.scene.stop('KeyLegendUi');
-      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), totalPoints: this.actionHandler.getTotalPoints()});
+      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), results: this.actionHandler.getResults()});
     })
   }
 

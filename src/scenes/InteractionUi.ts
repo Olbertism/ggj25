@@ -57,7 +57,7 @@ export class InteractionUi extends Scene {
         .text(150, -150, '', {
           fontSize: '16px',
           color: '#ffffff',
-          wordWrap: { width: 280 },
+          wordWrap: { width: 600 },
         })
         .setOrigin(0.5);
 
@@ -65,7 +65,7 @@ export class InteractionUi extends Scene {
         .text(150, -75, '', {
           fontSize: '16px',
           color: '#ffffff',
-          wordWrap: { width: 280 },
+          wordWrap: { width: 600 },
         })
         .setOrigin(0.5);
 
@@ -73,7 +73,7 @@ export class InteractionUi extends Scene {
         .text(150, 0, '', {
           fontSize: '16px',
           color: '#ffffff',
-          wordWrap: { width: 280 },
+          wordWrap: { width: 600 },
         })
         .setOrigin(0.5);
 
@@ -111,9 +111,12 @@ export class InteractionUi extends Scene {
       // Filter actions for not used and repeatable ones
       const fd = data.actions.filter(
         (action) =>
+            // Action is not in actionsTaken OR it is repeatable
             !this.actionsTaken.some(
                 (taken) => taken.key === action.key && action.repeatable !== true
-            )
+            ) &&
+            // If the action has a 'requires' field, ensure the required key exists in actionsTaken
+            (!action.requires || this.actionsTaken.some((taken) => taken.key === action.requires))
       );
       // Create action buttons
       fd.length > 0 &&

@@ -31,6 +31,19 @@ export const bubbleData: basicDataObject = {
   ],
 };
 
+export const catData: basicDataObject = {
+  title: "You know you want to!",
+  message: "This is Lajos. He's a cat. Better pet the cat.",
+  actions:[
+      {
+        key: 'pet-the-cat',
+        label: 'Pet the cat',
+        pointRange: [0,0],
+        effect: "Lajos is happy. You're acceptable.",
+    },
+  ],
+}
+
 export const labRatData: basicDataObject = {
   title: 'A cage with a lab rat',
   message:
@@ -45,6 +58,41 @@ export const labRatData: basicDataObject = {
   ],
 };
 
+export const computerData: basicDataObject = {
+  title: 'A computer with internet access',
+  message:
+    'You could try to find reports, research papers, historical documents attaining to the bubble .',
+  actions: [
+    {
+      key: 'cat-videos',
+      label: 'Watch cat videos. Meow!',
+      pointRange: [-2, 4],
+      effect: "That wasn't very useful, but a great use of your time!",
+      repeatable: true,
+    },
+    {
+      key: 'yt-videos',
+      label: 'Try to find witness account on social media',
+      pointRange: [-2, 1],
+      effect: "There were some promising videos, but you can't really rely on this information.",
+    },
+    {
+      key: 'journals',
+      label: 'Search through scientific journals',
+      pointRange: [-3, 3],
+      effect: "These things are difficult to study. You gain less information than you'd hope for.",
+      repeatable: true,
+    },
+    {
+      key: 'historical-documents',
+      label: 'Search through historical documents',
+      pointRange: [3,5],
+      effect: "Could it be that something like this had happened before? But what was the outcome???",
+      requires: 'journals',
+    },
+  ],
+};
+
 export const cameraData: basicDataObject = {
   title: 'A camera installation which monitors the bubble 24/7',
   message:
@@ -53,7 +101,7 @@ export const cameraData: basicDataObject = {
     {
       key: 'analyze-footage',
       label: 'Analyze the footage of the last hours',
-      pointRange: [],
+      pointRange: [-1,1],
       effect:
         'A lot of people tried that before and learned nothing from it. You are no exception.',
     },
@@ -141,21 +189,21 @@ export const rayMachineData: basicDataObject = {
     {
       key: 'fire-uv',
       label: 'Activate the UV-ray',
-      pointRange: [],
+      pointRange: [-3, -1],
       effect:
         'You expose the bubble to the UV-ray. Nothing happens and your instruments do not record any change at all.',
     },
     {
       key: 'fire-ir',
       label: 'Activate the IR-ray',
-      pointRange: [],
+      pointRange: [1,5],
       effect:
         'You expose the bubble to the IR-ray. The bubble does not seem to show any sign of temperature change. An interesting detail.',
     },
     {
       key: 'fire-laser',
       label: 'Activate the laser',
-      pointRange: [],
+      pointRange: [2,4],
       effect:
         'You expose the bubble to the laser. Your instruments record a tiny ripple in the surface matter of the bubble, as the laser is turned on.',
       leadsTo: '',
@@ -176,6 +224,7 @@ export interface actionObject {
   effect: string;
   leadsTo?: string;
   repeatable?: boolean;
+  requires?: string;
 }
 
 export const journalReports = [
