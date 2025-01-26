@@ -116,7 +116,8 @@ export class InteractionUi extends Scene {
                 (taken) => taken.key === action.key && action.repeatable !== true
             ) &&
             // If the action has a 'requires' field, ensure the required key exists in actionsTaken
-            (!action.requires || this.actionsTaken.some((taken) => taken.key === action.requires))
+            (!action.requires ||
+                this.actionsTaken.some((taken) => taken.key === action.requires))
       );
       // Create action buttons
       fd.length > 0 &&

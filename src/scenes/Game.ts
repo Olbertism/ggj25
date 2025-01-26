@@ -100,11 +100,15 @@ export class Game extends Scene {
       this.registry.set('actionHandler', new ActionHandler());
     }
 
+    const actionHandler: ActionHandler = this.registry.get('actionHandler');
+
+    // Initialize ObjectManager
+    this.objectManager = new ObjectManager(this);
+    this.actionHandler = actionHandler
     const bgMusic = this.sound.add('bg_music');
         bgMusic.loop = true;
         bgMusic.play();
 
-    const actionHandler: ActionHandler = this.registry.get('actionHandler');
 
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
@@ -117,9 +121,6 @@ export class Game extends Scene {
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
 
-    // Initialize ObjectManager
-    this.objectManager = new ObjectManager(this);
-    this.actionHandler = new ActionHandler();
 
     //player sprites
     this.anims.create({
@@ -259,6 +260,7 @@ export class Game extends Scene {
       console.log('Interacted with bubble at (1230, 1100)!');
       eventsCenter.emit('toggleInteraction', bubbleData);
     }, 1, true);
+
     this.bubble.sound = this.sound.add("bubble_rumble", { loop: true });
     // .preFX?.addGlow(0x8a1adb)
 
@@ -383,6 +385,7 @@ export class Game extends Scene {
       this.scene.stop('InteractionUi');
       this.scene.stop('JournalUi');
       this.scene.stop('KeyLegendUi');
+      this.registry.destroy();
       this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), results: this.actionHandler.getResults()});
     })
   }
