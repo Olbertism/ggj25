@@ -7,7 +7,7 @@ export const bubbleData: basicDataObject = {
       label: 'Step into the bubble',
       pointRange: [0, 0],
       effect: 'You boldly step into the bubble...',
-      leadsTo: '',
+      isBubble: true,
     },
     {
       key: 'take-measurements',
@@ -31,6 +31,14 @@ export const bubbleData: basicDataObject = {
       pointRange: [-2, 0],
       effect:
         "The rock passes through the bubble. You don't observe any special.",
+    },
+    {
+      key: 'heat-bubble',
+      label: 'Warm up the air around the bubble',
+      pointRange: [2, 3],
+      effect:
+        'You arrange some heaters, to increase the air temperature around the bubble. The reflective surface shows some very slight movement. You consider that the movements follows a pattern...',
+      requires: ['fire-ir'],
     },
   ],
 };
@@ -60,24 +68,29 @@ export const labRatData: basicDataObject = {
       effect:
         'The rat disappears in the bubble. The attached sensors are left behind. They show no change readings. As if nothing happened. But what about the rat?',
     },
+    {
+      key: 'feed-rat',
+      label: 'Feed the rat',
+      pointRange: [1, 2],
+      effect: 'The rat is very happy about the food.',
+    },
   ],
 };
 
 export const computerData: basicDataObject = {
   title: 'A computer with internet access',
-  message:
-    'You could try to find reports, research papers, historical documents attaining to the bubble .',
+  message: 'Access or send data. It is up to you.',
   actions: [
     {
       key: 'cat-videos',
       label: 'Watch cat videos. Meow!',
-      pointRange: [-2, 4],
+      pointRange: [-2, 1],
       effect: "That wasn't very useful, but a great use of your time!",
       repeatable: true,
     },
     {
       key: 'yt-videos',
-      label: 'Try to find witness account on social media',
+      label: 'Try to find witness accounts on the internet',
       pointRange: [-2, -1],
       effect:
         "There were some promising videos, but you can't really rely on this information.",
@@ -85,17 +98,40 @@ export const computerData: basicDataObject = {
     {
       key: 'journals',
       label: 'Search through scientific journals',
-      pointRange: [-1, 0],
-      effect: 'Your interns already provided you with material in your journal',
+      pointRange: [0, 0],
+      effect:
+        'Your interns already provided you with material in your journal. However, you can search for data about this place.',
       repeatable: true,
+    },
+    {
+      key: 'leak-data',
+      label: 'Leak confidential research data to the public',
+      pointRange: [0, 0],
+      effect:
+        'You are confident, that only a wide public access of all available data will shed light on the bubble anomalies. It is hard to foresee what consequences this action has, but for now it did not bring you closer to knowledge...',
+    },
+    {
+      key: 'get-recommendation',
+      label: 'Hear recommendation of a scientist',
+      pointRange: [0, 0],
+      effect:
+        'After you made the data available, Dr. Daniel Hanser recommends to step into the bubble AFTER you consumed a medium dosage of beta blockers. As it turns out, you do have them in this lab.',
+      requires: ['leak-data'],
+    },
+    {
+      key: 'take-beta-blockers',
+      label: 'Take beta blockers',
+      pointRange: [-3, -1],
+      effect: 'Maybe you are now ready to step into the bubble?',
+      requires: ['get-recommendation'],
     },
     {
       key: 'historical-documents',
       label: 'Search through historical documents of this place',
       pointRange: [2, 4],
       effect:
-        'You hope to find more information in this place. Maybe the placement of the bubble follows a reason?',
-      requires: 'journals',
+        'You hope to find more information in this place. Maybe the placement of the bubble follows a reason? However, it is hard to say what information could be relevant...',
+      requires: ['journals'],
     },
   ],
 };
@@ -125,6 +161,13 @@ export const guardData: basicDataObject = {
       pointRange: [0, 0],
       effect:
         'You had a nice chat about the weather and the peculiar state of the world, but nothing more.',
+    },
+    {
+      key: 'ask-guard-opinion',
+      label: 'Ask the the guard what he thinks the bubble is',
+      pointRange: [-2, -1],
+      effect:
+        '"The devil\'s work, that is for sure. If you ask me, which should seal off these things under a sarcophagus or so. Don\'t go too near there..."',
     },
   ],
 };
@@ -181,9 +224,17 @@ export const oldWomanData: basicDataObject = {
     {
       key: 'ask-old-woman-opinion',
       label: 'Ask the old woman what she thinks the bubble is',
+      pointRange: [1, 2],
+      effect:
+        'The woman does not say what she believes of the bubble. However, she mentions that ever since it appeared, she hears music in her dreams. Did you not read about this phenomena before?...',
+    },
+    {
+      key: 'ask-old-woman-dreams',
+      label: 'Ask the old woman about the dreams',
       pointRange: [2, 3],
       effect:
-        'The woman does not say what she believes of the bubble. However, she mentions that ever since it appeared, she hears music in her dreams.',
+        'The woman mentioned a distinctive melody, that she hears in all her recent dreams. You try to memorize it as good as you can...',
+      requires: ['ask-old-woman-opinion'],
     },
   ],
 };
@@ -205,14 +256,14 @@ export const rayMachineData: basicDataObject = {
       label: 'Activate the IR-ray',
       pointRange: [1, 5],
       effect:
-        'You expose the bubble to the IR-ray. The bubble does not seem to show any sign of temperature change. An interesting detail.',
+        'You expose the bubble to the IR-ray. The bubble does not seem to show any sign of temperature change, but there are very tiny ripple patterns where the ray hits the surface. An interesting detail...',
     },
     {
       key: 'fire-laser',
       label: 'Activate the laser',
       pointRange: [2, 4],
       effect:
-        'You expose the bubble to the laser. Your instruments record a tiny ripple in the surface matter of the bubble, as the laser is turned on.',
+        'You expose the bubble to the laser. Your instruments record a tiny ripple in the surface matter of the bubble, as the laser is turned on. This seems to mean something...',
       leadsTo: '',
     },
     {
@@ -255,6 +306,7 @@ export interface actionObject {
   repeatable?: boolean;
   requires?: string[];
   locked?: boolean;
+  isBubble?: boolean;
 }
 
 export interface journalReports {
@@ -308,7 +360,12 @@ export const journalNews = [
   },
   {
     title: 'Did the U.S. Government Open a Portal to Hell?',
-    text: 'Wild theories continue to swirl as conspiracy theorists claim the bubbles are linked to secret government projects. Some allege that the anomalies are “dimensional rifts” caused by covert experiments at Area 51 or other classified locations. “This is what happens when you play God,” said self-proclaimed truth-seeker Alex Carter in a viral video. “The bubbles are portals, but not to another universe—to Hell itself! Look at the timing—natural disasters, wars, and now this. It’s all connected.” Mainstream scientists dismiss these claims as nonsense, but fail to answer the pressing questions around the bubbles',
+    text: 'Wild theories continue to swirl as conspiracy theorists claim the bubbles are linked to secret government projects. Some allege that the anomalies are “dimensional rifts” caused by covert experiments at Area 51 or other classified locations. “This is what happens when you play God,” said self-proclaimed truth-seeker Alex Carter in a viral video. “The bubbles are portals, but not to another universe—to Hell itself! Look at the timing—natural disasters, wars, and now this. It’s all connected.” Mainstream scientists dismiss these claims as nonsense, but fail to answer the pressing questions around the bubbles.',
+  },
+  {
+    title:
+      "The Disco Bubble. Gen-Z Organizes Rave Party's Next To The Bubbles!",
+    text: 'The latest hype: Rave parties right next to the bubbles. Just recently, such an event took place in the french city Lyon, where one of these bubbles appeared at a derelict industrial site. People claim that the bubble enhances their perception of music and certain substances. One party-goer even claims, he could "feel a divine presence in the music" when he dances next to the bubble.',
   },
   {
     title: 'A Global Mirror of Fear and Hope',

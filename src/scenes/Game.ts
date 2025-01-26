@@ -2,7 +2,8 @@ import { Scene } from 'phaser';
 import { background } from '../commons';
 import {
   bubbleData,
-  cameraData, catData,
+  cameraData,
+  catData,
   computerData,
   guardData,
   labRatData,
@@ -105,11 +106,10 @@ export class Game extends Scene {
 
     // Initialize ObjectManager
     this.objectManager = new ObjectManager(this);
-    this.actionHandler = actionHandler
+    this.actionHandler = actionHandler;
     const bgMusic = this.sound.add('bg_music');
     bgMusic.loop = true;
     bgMusic.play();
-
 
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
@@ -122,7 +122,6 @@ export class Game extends Scene {
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
-
 
     //player sprites
     this.anims.create({
@@ -401,14 +400,19 @@ export class Game extends Scene {
       this.movementEnabled = true;
     });
 
-    eventsCenter.on('gameOver', () => {
+    eventsCenter.on('gameOver', (text: string) => {
+      console.log(text);
       this.scene.stop('Game');
       this.scene.stop('InteractionUi');
       this.scene.stop('JournalUi');
       this.scene.stop('KeyLegendUi');
       this.registry.destroy();
-      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), results: this.actionHandler.getResults()});
-    })
+      this.scene.start('GameOver', {
+        actionsTaken: this.actionHandler.getActionsTaken(),
+        results: this.actionHandler.getResults(),
+        message: text,
+      });
+    });
   }
 
   update() {
@@ -467,17 +471,25 @@ export class Game extends Scene {
       }
     }
     //update sounds on proximity:
-      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.bubble.x, this.bubble.y);
-      const range = 450;
-      if (distance < range) {
-        const volume = 1 - distance / range;
+    const distance = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      this.bubble.x,
+      this.bubble.y,
+    );
+    const range = 450;
+    if (distance < range) {
+      const volume = 1 - distance / range;
 
-        if (this.bubble.sound && this.bubble.sound instanceof Phaser.Sound.WebAudioSound) {
-          this.bubble.sound.setVolume(volume);
-            if (!this.bubble.sound.isPlaying) {
-              this.bubble.sound.play();
-            }
+      if (
+        this.bubble.sound &&
+        this.bubble.sound instanceof Phaser.Sound.WebAudioSound
+      ) {
+        this.bubble.sound.setVolume(volume);
+        if (!this.bubble.sound.isPlaying) {
+          this.bubble.sound.play();
         }
+      }
     } else {
       if (this.bubble.sound && this.bubble.sound.isPlaying) {
         this.bubble.sound.stop();

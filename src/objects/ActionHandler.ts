@@ -21,20 +21,55 @@ export class ActionHandler {
       Math.random() * (Math.floor(-7) - Math.ceil(-4)) + Math.ceil(-4),
     );
 
-        eventsCenter.on('action-event', this.handleAction, this)
+    eventsCenter.on('action-event', this.handleAction, this);
 
-        eventsCenter.on(Phaser.Scenes.Events.SHUTDOWN, () => {
-            eventsCenter.off('action-event', this.handleAction, this);
-        });
-    }
+    eventsCenter.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+      eventsCenter.off('action-event', this.handleAction, this);
+    });
+  }
 
   handleAction(action: actionObject) {
-    const points = Math.floor(
-      Math.random() *
-        (Math.floor(action.pointRange[1]) - Math.ceil(action.pointRange[0])) +
-        Math.ceil(action.pointRange[0]),
-    );
-    this.totalScore += points;
+    let points = 0;
+    if (action.isBubble) {
+      const requireds = ['emit-music', 'heat-bubble'];
+      let amountOfTakenActions = 0;
+      points = -6;
+      this.actionsTaken.forEach((action) => {
+        if (requireds.includes(action.key)) {
+          amountOfTakenActions += 1;
+        }
+      });
+      if (amountOfTakenActions >= 2) {
+        points = 6;
+        this.totalScore += points;
+        if (this.totalScore >= 11) {
+          eventsCenter.emit(
+            'gameOver',
+            'You made your step. A bright light surrounds you. Suddenly, you find yourself in the bubble. You can hear faint music and a feeling of warmth surrounds you. You cannot really explain it, but you feel like the bubble signals you, that you made the right choices.',
+          );
+        } else {
+          this.totalScore += points;
+          eventsCenter.emit(
+            'gameOver',
+            'You made your step. A bright light surrounds you. You loose all connection with your body. You disappear...',
+          );
+        }
+      } else {
+        this.totalScore += points;
+        eventsCenter.emit(
+          'gameOver',
+          'You made your step. A bright light surrounds you. You loose all connection with your body. You disappear...',
+        );
+      }
+      amountOfTakenActions = 0;
+    } else {
+      points = Math.floor(
+        Math.random() *
+          (Math.floor(action.pointRange[1]) - Math.ceil(action.pointRange[0])) +
+          Math.ceil(action.pointRange[0]),
+      );
+      this.totalScore += points;
+    }
     this.actionsTaken.push({
       key: action.key,
       label: action.label,
@@ -42,17 +77,17 @@ export class ActionHandler {
       repeatable: action.repeatable,
     });
 
-        console.log(this.actionsTaken);
+    console.log(this.actionsTaken);
 
-        if (action.key === 'cat-videos') {
-            window.open("https://www.youtube.com/watch?v=VRvmn2WA0Q8", '_blank');
-        }
-
-        if (this.actionsTaken.length === this.maxActions) {
-            eventsCenter.emit('gameOver');
-        }
-        console.log(this.actionsTaken)
+    if (action.key === 'cat-videos') {
+      window.open('https://www.youtube.com/watch?v=VRvmn2WA0Q8', '_blank');
     }
+
+    if (this.actionsTaken.length === this.maxActions) {
+      eventsCenter.emit('gameOver', 'You took to long and focused on the wrong things. You are pulled from this assignment...');
+    }
+    console.log(this.actionsTaken);
+  }
 
   getActionsTaken() {
     return this.actionsTaken;
