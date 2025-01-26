@@ -11,7 +11,7 @@ export class ActionHandler {
     constructor() {
         this.totalScore = 0; // Initialize totalScore
         this.actionsTaken = []; // Initialize actionsTaken
-        this.maxActions = Math.floor(Math.random() * (Math.floor(11) - Math.ceil(8)) + Math.ceil(8));
+        this.maxActions = 2// Math.floor(Math.random() * (Math.floor(11) - Math.ceil(8)) + Math.ceil(8));
         this.positiveThreshold = Math.floor(Math.random() * (Math.floor(12) - Math.ceil(6)) + Math.ceil(6));
         this.negativeThreshold = Math.floor(Math.random() * (Math.floor(-7) - Math.ceil(-4)) + Math.ceil(-4));
 
