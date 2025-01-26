@@ -38,7 +38,7 @@ export const bubbleData: basicDataObject = {
       pointRange: [2, 3],
       effect:
         'You arrange some heaters, to increase the air temperature around the bubble. The reflective surface shows some very slight movement. You consider that the movements follows a pattern...',
-      requires: ['fire-IR'],
+      requires: ['fire-ir'],
     },
   ],
 };
@@ -79,8 +79,7 @@ export const labRatData: basicDataObject = {
 
 export const computerData: basicDataObject = {
   title: 'A computer with internet access',
-  message:
-    'You could try to find reports, research papers, historical documents attaining to the bubble .',
+  message: 'Access or send data. It is up to you.',
   actions: [
     {
       key: 'cat-videos',
@@ -103,6 +102,28 @@ export const computerData: basicDataObject = {
       effect:
         'Your interns already provided you with material in your journal. However, you can search for data about this place.',
       repeatable: true,
+    },
+    {
+      key: 'leak-data',
+      label: 'Leak confidential research data to the public',
+      pointRange: [0, 0],
+      effect:
+        'You are confident, that only a wide public access of all available data will shed light on the bubble anomalies. It is hard to foresee what consequences this action has, but for now it did not bring you closer to knowledge...',
+    },
+    {
+      key: 'get-recommendation',
+      label: 'Hear recommendation of a scientist',
+      pointRange: [0, 0],
+      effect:
+        'After you made the data available, Dr. Daniel Hanser recommends to step into the bubble AFTER you consumed a medium dosage of beta blockers. As it turns out, you do have them in this lab.',
+      requires: ['leak-data'],
+    },
+    {
+      key: 'take-beta-blockers',
+      label: 'Take beta blockers',
+      pointRange: [-3, -1],
+      effect: 'Maybe you are now ready to step into the bubble?',
+      requires: ['get-recommendation'],
     },
     {
       key: 'historical-documents',
@@ -203,9 +224,17 @@ export const oldWomanData: basicDataObject = {
     {
       key: 'ask-old-woman-opinion',
       label: 'Ask the old woman what she thinks the bubble is',
-      pointRange: [2, 3],
+      pointRange: [1, 2],
       effect:
         'The woman does not say what she believes of the bubble. However, she mentions that ever since it appeared, she hears music in her dreams. Did you not read about this phenomena before?...',
+    },
+    {
+      key: 'ask-old-woman-dreams',
+      label: 'Ask the old woman about the dreams',
+      pointRange: [2, 3],
+      effect:
+        'The woman mentioned a distinctive melody, that she hears in all her recent dreams. You try to memorize it as good as you can...',
+      requires: ['ask-old-woman-opinion'],
     },
   ],
 };
@@ -331,7 +360,12 @@ export const journalNews = [
   },
   {
     title: 'Did the U.S. Government Open a Portal to Hell?',
-    text: 'Wild theories continue to swirl as conspiracy theorists claim the bubbles are linked to secret government projects. Some allege that the anomalies are “dimensional rifts” caused by covert experiments at Area 51 or other classified locations. “This is what happens when you play God,” said self-proclaimed truth-seeker Alex Carter in a viral video. “The bubbles are portals, but not to another universe—to Hell itself! Look at the timing—natural disasters, wars, and now this. It’s all connected.” Mainstream scientists dismiss these claims as nonsense, but fail to answer the pressing questions around the bubbles',
+    text: 'Wild theories continue to swirl as conspiracy theorists claim the bubbles are linked to secret government projects. Some allege that the anomalies are “dimensional rifts” caused by covert experiments at Area 51 or other classified locations. “This is what happens when you play God,” said self-proclaimed truth-seeker Alex Carter in a viral video. “The bubbles are portals, but not to another universe—to Hell itself! Look at the timing—natural disasters, wars, and now this. It’s all connected.” Mainstream scientists dismiss these claims as nonsense, but fail to answer the pressing questions around the bubbles.',
+  },
+  {
+    title:
+      "The Disco Bubble. Gen-Z Organizes Rave Party's Next To The Bubbles!",
+    text: 'The latest hype: Rave parties right next to the bubbles. Just recently, such an event took place in the french city Lyon, where one of these bubbles appeared at a derelict industrial site. People claim that the bubble enhances their perception of music and certain substances. One party-goer even claims, he could "feel a divine presence in the music" when he dances next to the bubble.',
   },
   {
     title: 'A Global Mirror of Fear and Hope',

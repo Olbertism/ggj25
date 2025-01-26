@@ -84,7 +84,7 @@ export class ActionHandler {
     }
 
     if (this.actionsTaken.length === this.maxActions) {
-      eventsCenter.emit('gameOver');
+      eventsCenter.emit('gameOver', 'You took to long and focused on the wrong things. You are pulled from this assignment...');
     }
     console.log(this.actionsTaken);
   }
