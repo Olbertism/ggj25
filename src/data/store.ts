@@ -220,7 +220,7 @@ export const rayMachineData: basicDataObject = {
       label: 'Send music via the laser',
       pointRange: [1, 2],
       effect: '',
-      requires: ['fire-laser', 'fire-ir'],
+      requires: ['fire-laser', 'ask-old-woman-opinion'],
     },
   ],
 };

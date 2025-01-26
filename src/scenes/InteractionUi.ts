@@ -123,9 +123,10 @@ export class InteractionUi extends Scene {
           ) &&
           // If the action has a 'requires' field, ensure the required key exists in actionsTaken
           (!action.requires ||
-            action.requires.every((action) =>
-              this.actionsTaken.find((taken) => taken.key === action),
-            )),
+            (Array.isArray(action.requires) &&
+              action.requires.every((action) =>
+                this.actionsTaken.find((taken) => taken.key === action),
+              ))),
       );
       // Create action buttons
       fd.length > 0 &&
