@@ -13,7 +13,11 @@ export class GameOver extends Scene {
     console.log(data);
     // Camera Setup
     this.camera = this.cameras.main;
-    this.camera.setBackgroundColor(0xff0000);
+    if (data.outcome.victory) {
+      this.camera.setBackgroundColor(0x0000ff);
+    } else {
+      this.camera.setBackgroundColor(0xff0000);
+    }
 
     // Background Image
     this.background = this.add.image(
@@ -24,14 +28,19 @@ export class GameOver extends Scene {
     this.background.setAlpha(0.5);
 
     // Game Over Title
-    this.gameover_text = this.add.text(this.camera.centerX, 100, 'Game Over', {
-      fontFamily: 'Arial Black',
-      fontSize: 48,
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 8,
-      align: 'center',
-    });
+    this.gameover_text = this.add.text(
+      this.camera.centerX,
+      100,
+      data.outcome.victory ? 'Congratulations!' : 'Game Over',
+      {
+        fontFamily: 'Arial Black',
+        fontSize: 48,
+        color: '#ffffff',
+        stroke: '#000000',
+        strokeThickness: 8,
+        align: 'center',
+      },
+    );
     this.gameover_text.setOrigin(0.5);
 
     // Extract Data
@@ -60,14 +69,6 @@ export class GameOver extends Scene {
         .text(800, yPosition, action.points.toString(), { font: '20px Arial' })
         .setOrigin(1, 0);
     });
-
-    // Game Over Message
-    /* const gameOverMsg =
-      totalScore >= positiveThreshold
-        ? 'Yaay'
-        : totalScore <= negativeThreshold
-        ? 'BOOO!'
-        : 'Meh'; */
 
     this.add
       .text(this.camera.centerX, 550, data.message, {

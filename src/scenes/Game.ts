@@ -112,7 +112,7 @@ export class Game extends Scene {
 
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
-    this.camera.postFX.addVignette(0.5,0.5, 0.99, 0.38);
+    this.camera.postFX.addVignette(0.5, 0.5, 0.99, 0.38);
 
     this.scene.run('JournalUi');
     this.scene.run('KeyLegendUi');
@@ -208,7 +208,6 @@ export class Game extends Scene {
 
     this.movementEnabled = true;
 
-
     // add bounding boxes for map objects
     this.mapObstacles = new MapObstacles(this);
     this.obstacleGroup = this.mapObstacles.createObstacles();
@@ -239,80 +238,125 @@ export class Game extends Scene {
     this.bubble.preFX?.addColorMatrix().saturate(0.5);
 
     // Camera
-    this.objectManager.createObject(1500, 1400, 'camera', () => {
-      console.log('Interacted with camera at (1500, 1400)!');
-      eventsCenter.emit('toggleInteraction', cameraData);
-    },1, false, "camera_click").preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        1500,
+        1400,
+        'camera',
+        () => {
+          console.log('Interacted with camera at (1500, 1400)!');
+          eventsCenter.emit('toggleInteraction', cameraData);
+        },
+        1,
+        false,
+        'camera_click',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     // Ray installation
-    this.objectManager.createObject(700, 1100, 'lamp', () => {
-      console.log('Interacted with rays at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', rayMachineData);
-    }, 1.5, false, "lamp_on").preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        700,
+        1100,
+        'lamp',
+        () => {
+          console.log('Interacted with rays at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', rayMachineData);
+        },
+        1.5,
+        false,
+        'lamp_on',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     // Lab Rat
-    this.objectManager.createObject(
-      515,
-      1500,
-      'lab-rat',
-      () => {
-        console.log('Interacted with lab rat at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', labRatData);
-      },
-      1,
-      false,
-      'rat-squeak',
-    ).preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        515,
+        1500,
+        'lab-rat',
+        () => {
+          console.log('Interacted with lab rat at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', labRatData);
+        },
+        1,
+        false,
+        'rat-squeak',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     // Computer
-    this.objectManager.createObject(630, 1345, 'computer', () => {
-      console.log('Interacted with computer at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', computerData);
-    },0.8, false, "keyboard").preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        630,
+        1345,
+        'computer',
+        () => {
+          console.log('Interacted with computer at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', computerData);
+        },
+        0.8,
+        false,
+        'keyboard',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     // Guard 1
-    this.objectManager.createObject(
-      550,
-      600,
-      'npcIdle',
-      () => {
-        console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', guardData);
-      },
-      0.8,
-      true,
-      'gasp',
-    ).preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        550,
+        600,
+        'npcIdle',
+        () => {
+          console.log('Interacted with guard at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', guardData);
+        },
+        0.8,
+        true,
+        'gasp',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     //oldman
-    this.objectManager.createObject(
-      1150,
-      630,
-      'oldManIdle',
-      () => {
-        console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', oldManData);
-      },
-      0.9,
-      true,
-      'oldman',
-    ).preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        1150,
+        630,
+        'oldManIdle',
+        () => {
+          console.log('Interacted with guard at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', oldManData);
+        },
+        0.9,
+        true,
+        'oldman',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
     //old woman
-    this.objectManager.createObject(
-      1260,
-      630,
-      'oldWomanIdle',
-      () => {
-        console.log('Interacted with guard at (800, 1000)!');
-        eventsCenter.emit('toggleInteraction', oldWomanData);
-      },
-      0.9,
-      true,
-      "witch"
-    ).preFX?.addColorMatrix().saturate(-0.5);
+    this.objectManager
+      .createObject(
+        1260,
+        630,
+        'oldWomanIdle',
+        () => {
+          console.log('Interacted with guard at (800, 1000)!');
+          eventsCenter.emit('toggleInteraction', oldWomanData);
+        },
+        0.9,
+        true,
+        'witch',
+      )
+      .preFX?.addColorMatrix()
+      .saturate(-0.5);
 
     //cat
-    this.cat =this.objectManager.createObject(
+    this.cat = this.objectManager.createObject(
       1350,
       1650,
       'catIdle',
@@ -325,7 +369,6 @@ export class Game extends Scene {
       'catIdle',
       'catWalk',
     );
-
 
     // Set up input keys
     if (this.input.keyboard != null) {
@@ -355,19 +398,23 @@ export class Game extends Scene {
       this.movementEnabled = true;
     });
 
-    eventsCenter.on('gameOver', (text: string) => {
-      console.log(text);
-      this.scene.stop('Game');
-      this.scene.stop('InteractionUi');
-      this.scene.stop('JournalUi');
-      this.scene.stop('KeyLegendUi');
-      this.registry.destroy();
-      this.scene.start('GameOver', {
-        actionsTaken: this.actionHandler.getActionsTaken(),
-        results: this.actionHandler.getResults(),
-        message: text,
-      });
-    });
+    eventsCenter.on(
+      'gameOver',
+      (text: string, outcome: { victory: boolean }) => {
+        console.log(text);
+        this.scene.stop('Game');
+        this.scene.stop('InteractionUi');
+        this.scene.stop('JournalUi');
+        this.scene.stop('KeyLegendUi');
+        this.registry.destroy();
+        this.scene.start('GameOver', {
+          actionsTaken: this.actionHandler.getActionsTaken(),
+          results: this.actionHandler.getResults(),
+          message: text,
+          outcome: outcome,
+        });
+      },
+    );
   }
 
   update() {

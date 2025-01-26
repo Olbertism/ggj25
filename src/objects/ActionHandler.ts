@@ -46,12 +46,14 @@ export class ActionHandler {
           eventsCenter.emit(
             'gameOver',
             'You made your step. A bright light surrounds you. Suddenly, you find yourself in the bubble. You can hear faint music and a feeling of warmth surrounds you. You cannot really explain it, but you feel like the bubble signals you, that you made the right choices.',
+            { victory: true },
           );
         } else {
           this.totalScore += points;
           eventsCenter.emit(
             'gameOver',
             'You made your step. A bright light surrounds you. You loose all connection with your body. You disappear...',
+            { victory: false },
           );
         }
       } else {
@@ -59,6 +61,7 @@ export class ActionHandler {
         eventsCenter.emit(
           'gameOver',
           'You made your step. A bright light surrounds you. You loose all connection with your body. You disappear...',
+          { victory: false },
         );
       }
       amountOfTakenActions = 0;
@@ -87,6 +90,7 @@ export class ActionHandler {
       eventsCenter.emit(
         'gameOver',
         'You took to long and focused on the wrong things. You are pulled from this assignment...',
+        { victory: false },
       );
     }
     console.log(this.actionsTaken);
