@@ -85,7 +85,14 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  updateHintPosition() {
+    if (this.interactionHint) { 
+      this.interactionHint.setPosition(this.x - 40, this.y - 10);
+    }
+  }
+
   handleInteraction(onInteract: () => void) {
+    console.log("handle interaction was called");
     this.isInteracting = true;
     if (this.canInteract) {
       onInteract();
@@ -95,7 +102,8 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
       this.collisionSound.play();
       this.soundPlayed = true;
     }
-    if (this.moveTween && !this.moveTween.isPaused()) {
+    console.log(this.moveTween);
+    if (this.scene.tweens.isTweening(this)) {
       this.moveTween.pause();
       this.play(this.idleAnim, true);
     }
@@ -107,11 +115,13 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     this.canInteract = false;
     this.soundPlayed = false;
     if (this.moveTween && this.moveTween.isPaused()) {
-      this.moveTween.resume(); // Resume the movement
+      console.log("should restart");
+      this.moveAlongRandomPath(this.scene); // Resume the movement
     }
   }
 
   private startBehavior(scene: Phaser.Scene) {
+    console.log("startbeh was called");
     this.play(this.idleAnim, true);
     if (!this.walkAnim) return;
     scene.time.addEvent({
@@ -149,16 +159,18 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
         y: this.path.getPoint(1).y,
         repeat: 0,
         onComplete: () => {
+          this.isInteracting = false;
           this.play(this.idleAnim, true);
           scene.time.addEvent({
             delay: Phaser.Math.Between(1000, 5000), // Random delay before moving again
             callback: () => {
               this.moveAlongRandomPath(scene); // Repeat move after idle
             },
-            loop: false,
+            loop: true,
           });
         },
         onUpdate: () => {
+          this.updateHintPosition();
           if (this.path.getPoint(1).x < this.x) {
             this.setFlipX(true);
           } else {
@@ -166,6 +178,13 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
           }
         },
       });
+    }
+  }
+
+  update() {
+    console.log("update is being triggeerd");
+    if(this.walkAnim){
+      this.updateHintPosition();
     }
   }
 }
