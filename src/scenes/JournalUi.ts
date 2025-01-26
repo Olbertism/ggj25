@@ -106,9 +106,9 @@ export class JournalUi extends Scene {
               })
               .setOrigin(0.5),
             this.add
-              .text(0, 240, entry.text, {
+              .text(Math.round(0), Math.round(240), entry.text, {
                 fontSize: '16px',
-                color: '#cccccc',
+                color: '#e6e1e1',
                 wordWrap: { width: 700 },
                 lineSpacing: 5,
               })
@@ -172,8 +172,8 @@ export class JournalUi extends Scene {
               .setOrigin(0.5),
             this.add
               .text(0, 170, entry.text, {
-                fontSize: '16px',
-                color: '#cccccc',
+                fontSize: '17px',
+                color: '#e6e1e1',
                 wordWrap: { width: 700 },
                 lineSpacing: 8,
               })
@@ -250,7 +250,7 @@ export class JournalUi extends Scene {
             this.add
               .text(0, 200, entry.background, {
                 fontSize: '16px',
-                color: '#cccccc',
+                color: '#e6e1e1',
                 wordWrap: { width: 700 },
                 lineSpacing: 8,
               })
@@ -258,7 +258,7 @@ export class JournalUi extends Scene {
             this.add
               .text(0, 275, entry.publications, {
                 fontSize: '16px',
-                color: '#cccccc',
+                color: '#e6e1e1',
                 wordWrap: { width: 700 },
               })
               .setOrigin(0.5),
@@ -326,6 +326,8 @@ export class JournalUi extends Scene {
 
     // Start on the first tab
     this.switchJournalTab('Reports');
+
+    this.scale.refresh();
   }
 
   private switchJournalTab(tab: string) {

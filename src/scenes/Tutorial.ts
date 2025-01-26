@@ -21,11 +21,11 @@ export class Tutorial extends Scene {
           fontSize: 20,
           align: 'left',
           lineSpacing: 5,
-          padding: { left: 5, right: 5, top: 5, bottom: 5 },
+          padding: { left: 15, right: 15, top: 15, bottom: 15 },
         },
       )
       .setOrigin(0.5)
-      .setBackgroundColor('grey');
+      .setBackgroundColor('#222222');
 
     this.add
       .text(

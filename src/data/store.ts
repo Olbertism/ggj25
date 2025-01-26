@@ -278,7 +278,8 @@ export const rayMachineData: basicDataObject = {
       key: 'emit-music',
       label: 'Send music via the laser',
       pointRange: [1, 2],
-      effect: 'Small visible ripples form on the surface of the bubble. Is it reacting to the music?...',
+      effect:
+        'Small visible ripples form on the surface of the bubble. Is it reacting to the music?...',
       requires: ['fire-laser', 'ask-old-woman-opinion'],
     },
   ],
@@ -322,7 +323,7 @@ export const journalReports: journalReports[] = [
   {
     title: 'The Definitive Nature of the Anomaly',
     author: 'Dr. Daniel Hanser',
-    text: 'After careful reflection, I am confident in declaring the true purpose of the anomalies: they are advanced communication devices sent by an extraterrestrial civilization to establish contact with humanity. The evidence is obvious to anyone willing to look beyond the rigid confines of traditional science. The bubbles’ reflective surfaces are clearly designed to capture and analyze visual data, while their selective absorption of living matter suggests a sophisticated method of gathering biological samples for study. The absence of gravitational or thermal signatures only strengthens this conclusion—it demonstrates their superior understanding of physics and their desire to avoid disrupting Earth’s delicate ecosystems. Claims that these bubbles “defy known science” are laughable at best. They are, without a doubt, the result of intelligent design. In fact, I believe it is only a matter of time before they reveal their purpose by initiating direct communication. It is our responsibility to approach the bubbles not with fear, but with reverence and open arms. ',
+    text: 'After careful reflection, I am confident in declaring the true purpose of the anomalies: they are advanced communication devices sent by an extraterrestrial civilization to establish contact with humanity. The evidence is obvious to anyone willing to look beyond the rigid confines of traditional science. The bubbles’ reflective surfaces are clearly designed to capture and analyze visual data, while their selective absorption of living matter suggests a sophisticated method of gathering biological samples for study. The absence of gravitational or thermal signatures only strengthens this conclusion—it demonstrates their superior understanding of physics and their desire to avoid disrupting Earth’s delicate ecosystems. Claims that these bubbles “defy known science” are laughable at best. I believe it is only a matter of time before they reveal their purpose by initiating direct communication. It is our responsibility to approach the bubbles not with fear, but with reverence and open arms. ',
   },
 ];
 
@@ -349,7 +350,7 @@ export const journalNews = [
   },
   {
     title: 'Russian Scientist Claims Bubbles Are a U.S. Experiment Gone Wrong',
-    text: 'Dr. Vasily Grigoryev, a physicist with ties to Russia’s space program, has made a bold and inflammatory accusation: the bubbles are the result of a classified American experiment that spiraled out of control. “We have intercepted data indicating unusual energy patterns in Nevada just hours before the bubbles appeared,” Grigoryev claimed during a press conference in Moscow. “This proves that the United States government is responsible for unleashing these anomalies on the world.” Dr. Grigoryev alleged that the anomalies were created during a high-energy particle collision experiment at a secretive U.S. military facility. “They were tampering with dimensions they didn’t understand,” he added, “and now the whole world is paying the price.”',
+    text: 'Dr. Vasily Grigoryev, a physicist with ties to Russia’s space program, has made a bold and inflammatory accusation: the bubbles are the result of a classified American experiment that spiraled out of control. “We have intercepted data indicating unusual energy patterns in Nevada just hours before the bubbles appeared,” Grigoryev claimed during a press conference in Moscow. “This proves that the United States government is responsible for unleashing these anomalies on the world.” Dr. Grigoryev alleged that the anomalies were created during a high-energy particle collision experiment at a secretive U.S. military facility.',
   },
   {
     title: 'Did the U.S. Government Open a Portal to Hell?',
