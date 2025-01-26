@@ -43,6 +43,10 @@ export class ObjectManager {
     this.scene.physics.add.existing(rect);
     this.objects.push({ object: object, rect: rect });
 
+    object.update = () => {
+      rect.setPosition(object.x, object.y); // Sync position of rectangle to the cat's position
+    };
+
     // Add overlap detection
     this.scene.physics.add.overlap(
       this.scene.player, // Assuming 'player' is defined on the scene

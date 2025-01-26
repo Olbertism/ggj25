@@ -9,6 +9,7 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
   idleAnim?: string;
   private path: Phaser.Curves.Path | null = null;
   private moveTween: Phaser.Tweens.Tween;
+  public isInteracting: boolean = false;
 
   constructor(
     scene: Phaser.Scene,
@@ -30,7 +31,13 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
 
     // Add the object to the scene
     scene.add.existing(this);
-    scene.physics.add.existing(this, true);
+    // scene.physics.add.existing(this, true);
+    if(walkAnim){
+      scene.physics.add.existing(this, false);
+    }
+    else{
+      scene.physics.add.existing(this, true);
+    }
     isAnimated && this.play(idleAnim ? idleAnim : texture, true);
 
     if (isAnimated && idleAnim) {
@@ -79,6 +86,7 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
   }
 
   handleInteraction(onInteract: () => void) {
+    this.isInteracting = true;
     if (this.canInteract) {
       onInteract();
     }
@@ -87,20 +95,27 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
       this.collisionSound.play();
       this.soundPlayed = true;
     }
+    if (this.moveTween && !this.moveTween.isPaused()) {
+      this.moveTween.pause();
+      this.play(this.idleAnim, true);
+    }
   }
 
   handleExitProximity() {
+    this.isInteracting = false;
     this.interactionHint.setVisible(false);
     this.canInteract = false;
     this.soundPlayed = false;
+    if (this.moveTween && this.moveTween.isPaused()) {
+      this.moveTween.resume(); // Resume the movement
+    }
   }
 
-  // Method to start the NPC's behavior of idling and moving on random paths
   private startBehavior(scene: Phaser.Scene) {
+    this.play(this.idleAnim, true);
     if (!this.walkAnim) return;
-    this.play(this.walkAnim, true);
     scene.time.addEvent({
-      delay: Phaser.Math.Between(4000, 7000),
+      delay: Phaser.Math.Between(2000, 4000),
       callback: () => {
         this.moveAlongRandomPath(scene);
       },
@@ -113,8 +128,8 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     const path = new Phaser.Curves.Path(this.x, this.y);
 
     for (let i = 0; i < numPoints; i++) {
-      const x = Phaser.Math.Between(100, 800);
-      const y = Phaser.Math.Between(100, 600);
+      const x = Phaser.Math.Between(this.x-300, this.x+300);
+      const y = Phaser.Math.Between(this.y-300, this.y+300);
       path.lineTo(x, y);
     }
     return path;
@@ -125,30 +140,32 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     this.path = this.generateRandomPath(5);
     if (!this.walkAnim) return;
     this.play(this.walkAnim, true);
-    this.moveTween = scene.tweens.add({
-      targets: this,
-      ease: 'Linear',
-      duration: 5000,
-      x: this.path.getPoint(1).x,
-      y: this.path.getPoint(1).y,
-      repeat: 0,
-      onComplete: () => {
-        this.play(this.idleAnim, true);
-        scene.time.addEvent({
-          delay: Phaser.Math.Between(1000, 3000), // Random delay before moving again
-          callback: () => {
-            this.moveAlongRandomPath(scene); // Repeat move after idle
-          },
-          loop: false,
-        });
-      },
-      onUpdate: () => {
-        if (this.path.getPoint(1).x < this.x) {
-          this.setFlipX(true);
-        } else {
-          this.setFlipX(false);
-        }
-      },
-    });
+    if(!this.isInteracting){
+      this.moveTween = scene.tweens.add({
+        targets: this,
+        ease: 'Linear',
+        duration: 5000,
+        x: this.path.getPoint(1).x,
+        y: this.path.getPoint(1).y,
+        repeat: 0,
+        onComplete: () => {
+          this.play(this.idleAnim, true);
+          scene.time.addEvent({
+            delay: Phaser.Math.Between(1000, 5000), // Random delay before moving again
+            callback: () => {
+              this.moveAlongRandomPath(scene); // Repeat move after idle
+            },
+            loop: false,
+          });
+        },
+        onUpdate: () => {
+          if (this.path.getPoint(1).x < this.x) {
+            this.setFlipX(true);
+          } else {
+            this.setFlipX(false);
+          }
+        },
+      });
+    }
   }
 }
