@@ -10,6 +10,7 @@ export class GameOver extends Scene {
   }
 
   create(data: any) {
+    this.sound.stopAll();
     console.log(data);
     // Camera Setup
     this.camera = this.cameras.main;
