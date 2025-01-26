@@ -58,17 +58,17 @@ export class GameOver extends Scene {
                     ? 'BOOO!'
                     : 'Meh';
 
-        this.add.text(this.camera.centerX, 400, gameOverMsg, {
+        this.add.text(this.camera.centerX, 650, `Your performance was: ${gameOverMsg}`, {
             font: '24px Arial',
             color: '#ffffff',
         }).setOrigin(0.5);
 
         // Thresholds
-        this.add.text(this.camera.centerX, 450, `Positive threshold: ${positiveThreshold}`, {
+        this.add.text(this.camera.centerX -200, 700, `Positive threshold: ${positiveThreshold}`, {
             font: '24px Arial',
         }).setOrigin(0.5);
 
-        this.add.text(this.camera.centerX, 500, `Negative threshold: ${negativeThreshold}`, {
+        this.add.text(this.camera.centerX + 200, 700, `Negative threshold: ${negativeThreshold}`, {
             font: '24px Arial',
         }).setOrigin(0.5);
 

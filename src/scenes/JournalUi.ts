@@ -8,11 +8,11 @@ export class JournalUi extends Scene {
   journalContent: Phaser.GameObjects.Container;
 
   reportContainer: Phaser.GameObjects.Container;
-  reports: Phaser.GameObjects.Container[] = [];
+  reports: Phaser.GameObjects.Container[];
   newsContainer: Phaser.GameObjects.Container;
-  news: Phaser.GameObjects.Container[] = [];
+  news: Phaser.GameObjects.Container[];
   dossierContainer: Phaser.GameObjects.Container;
-  dossiers: Phaser.GameObjects.Container[] = [];
+  dossiers: Phaser.GameObjects.Container[];
 
   currentPage: number = 1;
   currentContents: Phaser.GameObjects.Container[] = [];
@@ -34,6 +34,11 @@ export class JournalUi extends Scene {
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       eventsCenter.off('toggleJournal', this.toggleJournal, this);
     });
+
+    // initialise arrays
+    this.reports = [];
+    this.news = [];
+    this.dossiers = [];
 
     // Create a journal UI container
     this.journal = this.add.container(514, 394);
@@ -220,7 +225,7 @@ export class JournalUi extends Scene {
     this.newsContainer.add(this.news).setVisible(false);
 
     this.dossierContainer = this.add.container(0, -190);
-    journalDossiers.forEach((entry, index) => {
+    journalDossiers.forEach((entry) => {
       this.dossiers.push(
         this.add
           .container(0, 0, [

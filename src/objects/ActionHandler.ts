@@ -21,8 +21,12 @@ export class ActionHandler {
       Math.random() * (Math.floor(-7) - Math.ceil(-4)) + Math.ceil(-4),
     );
 
-    eventsCenter.on('action-event', this.handleAction, this);
-  }
+        eventsCenter.on('action-event', this.handleAction, this)
+
+        eventsCenter.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+            eventsCenter.off('action-event', this.handleAction, this);
+        });
+    }
 
   handleAction(action: actionObject) {
     const points = Math.floor(
@@ -38,11 +42,17 @@ export class ActionHandler {
       repeatable: action.repeatable,
     });
 
-    if (this.actionsTaken.length === this.maxActions) {
-      eventsCenter.emit('gameOver');
+        console.log(this.actionsTaken);
+
+        if (action.key === 'cat-videos') {
+            window.open("https://www.youtube.com/watch?v=VRvmn2WA0Q8", '_blank');
+        }
+
+        if (this.actionsTaken.length === this.maxActions) {
+            eventsCenter.emit('gameOver');
+        }
+        console.log(this.actionsTaken)
     }
-    console.log(this.actionsTaken);
-  }
 
   getActionsTaken() {
     return this.actionsTaken;
