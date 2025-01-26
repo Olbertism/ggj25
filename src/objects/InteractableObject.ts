@@ -69,7 +69,6 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
     player: Phaser.Physics.Arcade.Sprite,
     onInteract: () => void,
   ) {
-    console.log('handleProx', this.canInteract);
     if (!this.canInteract) {
       this.interactionHint.setVisible(true);
       this.canInteract = true;
@@ -88,7 +87,6 @@ export class InteractableObject extends Phaser.Physics.Arcade.Sprite {
   }
 
   handleInteraction(onInteract: () => void) {
-    console.log('handleInteraction', this.canInteract);
     this.isInteracting = true;
     if (this.canInteract) {
       onInteract();

@@ -97,7 +97,6 @@ export class Game extends Scene {
 
   create() {
     if (this.scene.manager.isActive('GameOver')) {
-      console.log('stopping go');
       this.scene.stop('GameOver');
     }
 
@@ -233,7 +232,6 @@ export class Game extends Scene {
       1100,
       'bubble',
       () => {
-        console.log('Interacted with bubble at (1230, 1100)!');
         eventsCenter.emit('toggleInteraction', bubbleData);
       },
       1,
@@ -249,7 +247,7 @@ export class Game extends Scene {
         1400,
         'camera',
         () => {
-          console.log('Interacted with camera at (1500, 1400)!');
+
           eventsCenter.emit('toggleInteraction', cameraData);
         },
         1,
@@ -266,7 +264,7 @@ export class Game extends Scene {
         1100,
         'lamp',
         () => {
-          console.log('Interacted with rays at (800, 1000)!');
+
           eventsCenter.emit('toggleInteraction', rayMachineData);
         },
         1.5,
@@ -283,7 +281,7 @@ export class Game extends Scene {
         1500,
         'lab-rat',
         () => {
-          console.log('Interacted with lab rat at (800, 1000)!');
+
           eventsCenter.emit('toggleInteraction', labRatData);
         },
         1,
@@ -300,7 +298,7 @@ export class Game extends Scene {
         1345,
         'computer',
         () => {
-          console.log('Interacted with computer at (800, 1000)!');
+
           eventsCenter.emit('toggleInteraction', computerData);
         },
         0.8,
@@ -317,7 +315,7 @@ export class Game extends Scene {
         600,
         'npcIdle',
         () => {
-          console.log('Interacted with guard at (800, 1000)!');
+
           eventsCenter.emit('toggleInteraction', guardData);
         },
         0.8,
@@ -334,7 +332,6 @@ export class Game extends Scene {
         630,
         'oldManIdle',
         () => {
-          console.log('Interacted with guard at (800, 1000)!');
           eventsCenter.emit('toggleInteraction', oldManData);
         },
         0.9,
@@ -350,7 +347,7 @@ export class Game extends Scene {
         630,
         'oldWomanIdle',
         () => {
-          console.log('Interacted with guard at (800, 1000)!');
+
           eventsCenter.emit('toggleInteraction', oldWomanData);
         },
         0.9,
@@ -386,13 +383,6 @@ export class Game extends Scene {
       this.aKey = this.input.keyboard.addKey('a');
       this.dKey = this.input.keyboard.addKey('d');
     }
-
-    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      const worldX = pointer.worldX;
-      const worldY = pointer.worldY;
-
-      console.log(`Clicked at world position: x: ${worldX}, y: ${worldY}`);
-    });
 
     eventsCenter.on('disableMovement', () => {
       this.movementEnabled = false;
