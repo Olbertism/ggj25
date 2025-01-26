@@ -60,6 +60,7 @@ export const catData: basicDataObject = {
       label: 'Pet the cat',
       pointRange: [0, 0],
       effect: "Lajos is happy. You're acceptable.",
+      repeatable: true,
     },
   ],
 };
