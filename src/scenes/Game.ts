@@ -2,7 +2,7 @@ import { Scene } from 'phaser';
 import { background } from '../commons';
 import {
   bubbleData,
-  cameraData,
+  cameraData, catData,
   computerData,
   guardData,
   labRatData,
@@ -113,6 +113,7 @@ export class Game extends Scene {
 
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
+    this.camera.postFX.addVignette(0.5,0.5, 0.99, 0.38);
 
     this.scene.run('JournalUi');
     this.scene.run('KeyLegendUi');
@@ -143,7 +144,7 @@ export class Game extends Scene {
     });
 
     this.player = this.physics.add.sprite(850, 850, 'idleSheet');
-    this.player.play('idle');
+    this.player.play('idle').preFX?.addColorMatrix().saturate(-0.5);
 
     //npc sprites:
     this.anims.create({
@@ -223,17 +224,7 @@ export class Game extends Scene {
       '',
       false,
     );
-    /* const cat = new Npc(
-      this,
-      500,
-      700,
-      'catIdle',
-      'cat',
-      1.5,
-      'catIdle',
-      'catWalk',
-      true,
-    ); */
+
 
     // Add NPCs to a group for easier management
     this.npcGroup.add(npc1);
@@ -267,20 +258,20 @@ export class Game extends Scene {
       },
       1,
       true,
-    );
+    ).preFX?.addColorMatrix().saturate(0.5);
     this.bubble.sound = this.sound.add('bubble_rumble', { loop: true });
 
     // Camera
     this.objectManager.createObject(1500, 1400, 'camera', () => {
       console.log('Interacted with camera at (1500, 1400)!');
       eventsCenter.emit('toggleInteraction', cameraData);
-    },1, false, "camera_click");
+    },1, false, "camera_click").preFX?.addColorMatrix().saturate(-0.5);
 
     // Ray installation
     this.objectManager.createObject(800, 1000, 'lamp', () => {
       console.log('Interacted with rays at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', rayMachineData);
-    }, 1.5, false, "lamp_on");
+    }, 1.5, false, "lamp_on").preFX?.addColorMatrix().saturate(-0.5);
 
     // Lab Rat
     this.objectManager.createObject(
@@ -294,13 +285,13 @@ export class Game extends Scene {
       1,
       false,
       'rat-squeak',
-    );
+    ).preFX?.addColorMatrix().saturate(-0.5);
 
     // Computer
     this.objectManager.createObject(570, 1350, 'computer', () => {
       console.log('Interacted with computer at (800, 1000)!');
       eventsCenter.emit('toggleInteraction', computerData);
-    },1, false, "keyboard");
+    },1, false, "keyboard").preFX?.addColorMatrix().saturate(-0.5);
 
     // Guard 1
     this.objectManager.createObject(
@@ -314,7 +305,7 @@ export class Game extends Scene {
       0.8,
       true,
       'gasp',
-    );
+    ).preFX?.addColorMatrix().saturate(-0.5);
 
     // Guard 2
     this.objectManager.createObject(
@@ -328,7 +319,8 @@ export class Game extends Scene {
       0.8,
       true,
       'gasp',
-    );
+    ).preFX?.addColorMatrix().saturate(-0.5);
+
     //oldman
     this.objectManager.createObject(
       1150,
@@ -341,7 +333,7 @@ export class Game extends Scene {
       0.9,
       true,
       'murmur',
-    );
+    ).preFX?.addColorMatrix().saturate(-0.5);
     //old woman
     this.objectManager.createObject(
       1260,
@@ -353,7 +345,7 @@ export class Game extends Scene {
       },
       0.9,
       true,
-    );
+    ).preFX?.addColorMatrix().saturate(-0.5);
 
     //cat
     this.cat =this.objectManager.createObject(
@@ -361,7 +353,7 @@ export class Game extends Scene {
       1650,
       'catIdle',
       () => {
-        eventsCenter.emit('toggleInteraction', bubbleData);
+        eventsCenter.emit('toggleInteraction', catData);
       },
       1.5,
       true,
