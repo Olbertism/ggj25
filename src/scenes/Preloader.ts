@@ -42,6 +42,7 @@ export class Preloader extends Scene {
     this.load.audio('camera_click', '/music/camera_click.mp3');
     this.load.audio('keyboard', '/music/keyboard.mp3');
     this.load.audio('gasp', '/music/gasp.mp3');
+    this.load.audio('meow', '/music/meow.mp3');
     //this.load.image('guard', 'new_police_idle_sprite.png');
   }
 

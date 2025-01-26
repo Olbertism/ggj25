@@ -31,6 +31,7 @@ export class Game extends Scene {
   bubbleZone: Phaser.GameObjects.Rectangle;
   bubbleBody: Phaser.FX.Circle;
   bubble: Phaser.Physics.Arcade.Sprite;
+  cat: Phaser.Physics.Arcade.Sprite;
 
   private journalKey!: Phaser.Input.Keyboard.Key;
 
@@ -355,17 +356,18 @@ export class Game extends Scene {
     );
 
     //cat
-    this.objectManager.createObject(
-      500,
-      700,
+    this.cat =this.objectManager.createObject(
+      1350,
+      1650,
       'catIdle',
       () => {
         eventsCenter.emit('toggleInteraction', bubbleData);
       },
       1.5,
       true,
-      'rat-squeak',
+      'meow',
       'catIdle',
+      'catWalk',
     );
 
     this.physics.add.collider(
@@ -418,6 +420,7 @@ export class Game extends Scene {
   }
 
   update() {
+    this.cat.update();
     if (!this.cursors) return;
 
     if (!this.movementEnabled) {
