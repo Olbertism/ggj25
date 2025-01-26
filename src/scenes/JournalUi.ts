@@ -331,7 +331,6 @@ export class JournalUi extends Scene {
   }
 
   private switchJournalTab(tab: string) {
-    console.log('switch tab');
     // Update journal content based on the selected tab
     const tabContent: Record<string, string> = {
       Reports: 'This is the Notes tab. Write your thoughts here.',
@@ -357,19 +356,23 @@ export class JournalUi extends Scene {
     }
 
     // Highlight the active tab
-    this.journal.each((child) => {
-      if (child instanceof Phaser.GameObjects.Text && tabContent[child.text]) {
-        child.setBackgroundColor(child.text === tab ? '#888888' : '#444444');
-      }
-    });
+    this.journal.each(
+      (child: Phaser.GameObjects.Text | Phaser.GameObjects.Container) => {
+        if (
+          child instanceof Phaser.GameObjects.Text &&
+          tabContent[child.text]
+        ) {
+          child.setBackgroundColor(child.text === tab ? '#888888' : '#444444');
+        }
+      },
+    );
   }
 
   goPageDown(
     contentsArray: Phaser.GameObjects.Container[],
     nextPage: number,
-    text,
+    text: Phaser.GameObjects.Text,
   ) {
-    console.log('pageDown');
     if (nextPage <= 0) return;
     contentsArray.forEach((entry, index) => {
       if (index === nextPage - 1) {
@@ -385,9 +388,8 @@ export class JournalUi extends Scene {
   goPageUp(
     contentsArray: Phaser.GameObjects.Container[],
     nextPage: number,
-    text,
+    text: Phaser.GameObjects.Text,
   ) {
-    console.log('pageUp', nextPage);
     if (nextPage > contentsArray.length) return;
     contentsArray.forEach((entry, index) => {
       if (index === nextPage - 1) {
@@ -401,7 +403,6 @@ export class JournalUi extends Scene {
   }
 
   private toggleJournal() {
-    console.log('toggle');
     if (this.isJournalOpen) {
       // Close the journal
       this.journal.setVisible(false);

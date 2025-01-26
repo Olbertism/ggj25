@@ -6,9 +6,6 @@ export class KeyLegendUi extends Scene {
   }
 
   create() {
-    console.log('create keyLegend');
-    //  Grab a reference to the Game Scene
-    // const mainGame = this.scene.get('Game');
     // Create a container for the key legend
     const keyLegend = this.add.container(0, 0);
 

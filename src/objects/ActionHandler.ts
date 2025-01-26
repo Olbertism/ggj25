@@ -80,8 +80,6 @@ export class ActionHandler {
       repeatable: action.repeatable,
     });
 
-    console.log(this.actionsTaken);
-
     if (action.key === 'cat-videos') {
       window.open('https://www.youtube.com/watch?v=VRvmn2WA0Q8', '_blank');
     }
@@ -93,7 +91,6 @@ export class ActionHandler {
         { victory: false },
       );
     }
-    console.log(this.actionsTaken);
   }
 
   getActionsTaken() {
@@ -101,7 +98,6 @@ export class ActionHandler {
   }
 
   getResults() {
-    console.log('getResults', this.actionsTaken);
     if (
       this.actionsTaken.filter((action) => action.key === 'pet-the-cat')
         .length < 1
@@ -113,7 +109,6 @@ export class ActionHandler {
         points: -4,
       });
     }
-    console.log(this.negativeThreshold, this.positiveThreshold);
 
     return {
       totalScore: this.totalScore,

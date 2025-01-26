@@ -28,7 +28,7 @@ export class MainMenu extends Scene {
       .text(
         690,
         250,
-        'Anomaly SCP-9786 detected. Unit-23 deployed to investigate.\n' +
+        'Anomaly SCP-9786 detected. MTF-23 deployed to investigate.\n' +
           'Classification pending. Proceed with caution.',
         {
           fontFamily: 'Courier New',
