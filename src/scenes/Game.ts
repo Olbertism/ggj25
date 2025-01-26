@@ -104,11 +104,10 @@ export class Game extends Scene {
 
     // Initialize ObjectManager
     this.objectManager = new ObjectManager(this);
-    this.actionHandler = actionHandler
+    this.actionHandler = actionHandler;
     const bgMusic = this.sound.add('bg_music');
     bgMusic.loop = true;
     bgMusic.play();
-
 
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
@@ -120,7 +119,6 @@ export class Game extends Scene {
     this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
     this.physics.world.setBounds(0, 0, background.width, background.height);
     this.cameras.main.setBounds(0, 0, background.width, background.height);
-
 
     //player sprites
     this.anims.create({
@@ -270,16 +268,32 @@ export class Game extends Scene {
     this.bubble.sound = this.sound.add('bubble_rumble', { loop: true });
 
     // Camera
-    this.objectManager.createObject(1500, 1400, 'camera', () => {
-      console.log('Interacted with camera at (1500, 1400)!');
-      eventsCenter.emit('toggleInteraction', cameraData);
-    },1, false, "camera_click");
+    this.objectManager.createObject(
+      1500,
+      1400,
+      'camera',
+      () => {
+        console.log('Interacted with camera at (1500, 1400)!');
+        eventsCenter.emit('toggleInteraction', cameraData);
+      },
+      1,
+      false,
+      'camera_click',
+    );
 
     // Ray installation
-    this.objectManager.createObject(800, 1000, 'lamp', () => {
-      console.log('Interacted with rays at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', rayMachineData);
-    }, 1.5, false, "lamp_on");
+    this.objectManager.createObject(
+      800,
+      1000,
+      'lamp',
+      () => {
+        console.log('Interacted with rays at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', rayMachineData);
+      },
+      1.5,
+      false,
+      'lamp_on',
+    );
 
     // Lab Rat
     this.objectManager.createObject(
@@ -296,10 +310,18 @@ export class Game extends Scene {
     );
 
     // Computer
-    this.objectManager.createObject(570, 1350, 'computer', () => {
-      console.log('Interacted with computer at (800, 1000)!');
-      eventsCenter.emit('toggleInteraction', computerData);
-    },1, false, "keyboard");
+    this.objectManager.createObject(
+      570,
+      1350,
+      'computer',
+      () => {
+        console.log('Interacted with computer at (800, 1000)!');
+        eventsCenter.emit('toggleInteraction', computerData);
+      },
+      1,
+      false,
+      'keyboard',
+    );
 
     // Guard 1
     this.objectManager.createObject(
@@ -407,14 +429,19 @@ export class Game extends Scene {
       this.movementEnabled = true;
     });
 
-    eventsCenter.on('gameOver', () => {
+    eventsCenter.on('gameOver', (text: string) => {
+      console.log(text);
       this.scene.stop('Game');
       this.scene.stop('InteractionUi');
       this.scene.stop('JournalUi');
       this.scene.stop('KeyLegendUi');
       this.registry.destroy();
-      this.scene.start('GameOver', {actionsTaken: this.actionHandler.getActionsTaken(), results: this.actionHandler.getResults()});
-    })
+      this.scene.start('GameOver', {
+        actionsTaken: this.actionHandler.getActionsTaken(),
+        results: this.actionHandler.getResults(),
+        message: text,
+      });
+    });
   }
 
   update() {
@@ -472,17 +499,25 @@ export class Game extends Scene {
       }
     }
     //update sounds on proximity:
-      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.bubble.x, this.bubble.y);
-      const range = 450;
-      if (distance < range) {
-        const volume = 1 - distance / range;
+    const distance = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      this.bubble.x,
+      this.bubble.y,
+    );
+    const range = 450;
+    if (distance < range) {
+      const volume = 1 - distance / range;
 
-        if (this.bubble.sound && this.bubble.sound instanceof Phaser.Sound.WebAudioSound) {
-          this.bubble.sound.setVolume(volume);
-            if (!this.bubble.sound.isPlaying) {
-              this.bubble.sound.play();
-            }
+      if (
+        this.bubble.sound &&
+        this.bubble.sound instanceof Phaser.Sound.WebAudioSound
+      ) {
+        this.bubble.sound.setVolume(volume);
+        if (!this.bubble.sound.isPlaying) {
+          this.bubble.sound.play();
         }
+      }
     } else {
       if (this.bubble.sound && this.bubble.sound.isPlaying) {
         this.bubble.sound.stop();

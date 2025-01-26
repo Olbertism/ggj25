@@ -7,7 +7,7 @@ export const bubbleData: basicDataObject = {
       label: 'Step into the bubble',
       pointRange: [0, 0],
       effect: 'You boldly step into the bubble...',
-      leadsTo: '',
+      isBubble: true,
     },
     {
       key: 'take-measurements',
@@ -31,6 +31,14 @@ export const bubbleData: basicDataObject = {
       pointRange: [-2, 0],
       effect:
         "The rock passes through the bubble. You don't observe any special.",
+    },
+    {
+      key: 'heat-bubble',
+      label: 'Warm up the air around the bubble',
+      pointRange: [2, 3],
+      effect:
+        'You arrange some heaters, to increase the air temperature around the bubble. The reflective surface shows some very slight movement. You consider that the movements follows a pattern...',
+      requires: ['fire-IR'],
     },
   ],
 };
@@ -60,6 +68,12 @@ export const labRatData: basicDataObject = {
       effect:
         'The rat disappears in the bubble. The attached sensors are left behind. They show no change readings. As if nothing happened. But what about the rat?',
     },
+    {
+      key: 'feed-rat',
+      label: 'Feed the rat',
+      pointRange: [1, 2],
+      effect: 'The rat is very happy about the food.',
+    },
   ],
 };
 
@@ -71,13 +85,13 @@ export const computerData: basicDataObject = {
     {
       key: 'cat-videos',
       label: 'Watch cat videos. Meow!',
-      pointRange: [-2, 4],
+      pointRange: [-2, 1],
       effect: "That wasn't very useful, but a great use of your time!",
       repeatable: true,
     },
     {
       key: 'yt-videos',
-      label: 'Try to find witness account on social media',
+      label: 'Try to find witness accounts on the internet',
       pointRange: [-2, -1],
       effect:
         "There were some promising videos, but you can't really rely on this information.",
@@ -85,8 +99,9 @@ export const computerData: basicDataObject = {
     {
       key: 'journals',
       label: 'Search through scientific journals',
-      pointRange: [-1, 0],
-      effect: 'Your interns already provided you with material in your journal',
+      pointRange: [0, 0],
+      effect:
+        'Your interns already provided you with material in your journal. However, you can search for data about this place.',
       repeatable: true,
     },
     {
@@ -94,8 +109,8 @@ export const computerData: basicDataObject = {
       label: 'Search through historical documents of this place',
       pointRange: [2, 4],
       effect:
-        'You hope to find more information in this place. Maybe the placement of the bubble follows a reason?',
-      requires: 'journals',
+        'You hope to find more information in this place. Maybe the placement of the bubble follows a reason? However, it is hard to say what information could be relevant...',
+      requires: ['journals'],
     },
   ],
 };
@@ -125,6 +140,13 @@ export const guardData: basicDataObject = {
       pointRange: [0, 0],
       effect:
         'You had a nice chat about the weather and the peculiar state of the world, but nothing more.',
+    },
+    {
+      key: 'ask-guard-opinion',
+      label: 'Ask the the guard what he thinks the bubble is',
+      pointRange: [-2, -1],
+      effect:
+        '"The devil\'s work, that is for sure. If you ask me, which should seal off these things under a sarcophagus or so. Don\'t go too near there..."',
     },
   ],
 };
@@ -183,7 +205,7 @@ export const oldWomanData: basicDataObject = {
       label: 'Ask the old woman what she thinks the bubble is',
       pointRange: [2, 3],
       effect:
-        'The woman does not say what she believes of the bubble. However, she mentions that ever since it appeared, she hears music in her dreams.',
+        'The woman does not say what she believes of the bubble. However, she mentions that ever since it appeared, she hears music in her dreams. Did you not read about this phenomena before?...',
     },
   ],
 };
@@ -205,14 +227,14 @@ export const rayMachineData: basicDataObject = {
       label: 'Activate the IR-ray',
       pointRange: [1, 5],
       effect:
-        'You expose the bubble to the IR-ray. The bubble does not seem to show any sign of temperature change. An interesting detail.',
+        'You expose the bubble to the IR-ray. The bubble does not seem to show any sign of temperature change, but there are very tiny ripple patterns where the ray hits the surface. An interesting detail...',
     },
     {
       key: 'fire-laser',
       label: 'Activate the laser',
       pointRange: [2, 4],
       effect:
-        'You expose the bubble to the laser. Your instruments record a tiny ripple in the surface matter of the bubble, as the laser is turned on.',
+        'You expose the bubble to the laser. Your instruments record a tiny ripple in the surface matter of the bubble, as the laser is turned on. This seems to mean something...',
       leadsTo: '',
     },
     {
@@ -255,6 +277,7 @@ export interface actionObject {
   repeatable?: boolean;
   requires?: string[];
   locked?: boolean;
+  isBubble?: boolean;
 }
 
 export interface journalReports {
