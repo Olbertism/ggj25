@@ -160,7 +160,7 @@ export const cameraData: basicDataObject = {
 };
 
 export const guardData: basicDataObject = {
-  title: 'One of the security guards',
+  title: 'A security guard',
   message: 'The premise is guarded around the clock. The guards seem bored.',
   actions: [
     {
@@ -173,9 +173,9 @@ export const guardData: basicDataObject = {
     {
       key: 'ask-guard-opinion',
       label: 'Ask the the guard what he thinks the bubble is',
-      pointRange: [-2, -1],
+      pointRange: [-2, 0],
       effect:
-        '"The devil\'s work, that is for sure. If you ask me, which should seal off these things under a sarcophagus or so. Don\'t go too near there..."',
+        '"The devil\'s work, that is for sure. If you ask me, we should seal off these things under a sarcophagus or so. Don\'t go too near there..."',
     },
   ],
 };
