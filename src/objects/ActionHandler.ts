@@ -31,7 +31,7 @@ export class ActionHandler {
   handleAction(action: actionObject) {
     let points = 0;
     if (action.isBubble) {
-      const requireds = ['emit-music', 'heat-bubble'];
+      const requireds = ['emit-music', 'heat-bubble', 'feed-rat', 'hum-melody'];
       let amountOfTakenActions = 0;
       points = -6;
       this.actionsTaken.forEach((action) => {
@@ -84,7 +84,10 @@ export class ActionHandler {
     }
 
     if (this.actionsTaken.length === this.maxActions) {
-      eventsCenter.emit('gameOver', 'You took to long and focused on the wrong things. You are pulled from this assignment...');
+      eventsCenter.emit(
+        'gameOver',
+        'You took to long and focused on the wrong things. You are pulled from this assignment...',
+      );
     }
     console.log(this.actionsTaken);
   }

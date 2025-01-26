@@ -40,6 +40,14 @@ export const bubbleData: basicDataObject = {
         'You arrange some heaters, to increase the air temperature around the bubble. The reflective surface shows some very slight movement. You consider that the movements follows a pattern...',
       requires: ['fire-ir'],
     },
+    {
+      key: 'hum-melody',
+      label: 'Hum the melody the old woman showed you',
+      pointRange: [2, 3],
+      effect:
+        'It feels silly, but you hum the melody to the bubble. At first, it remains unchanged, but once you got a bit closer, you see small ripples on its surface. Something is happening...',
+      requires: ['ask-old-woman-dream'],
+    },
   ],
 };
 
@@ -270,25 +278,10 @@ export const rayMachineData: basicDataObject = {
       key: 'emit-music',
       label: 'Send music via the laser',
       pointRange: [1, 2],
-      effect: '',
+      effect: 'Small visible ripples form on the surface of the bubble. Is it reacting to the music?...',
       requires: ['fire-laser', 'ask-old-woman-opinion'],
     },
   ],
-};
-
-export const unlockableActions = {
-  'heat-bubble': {
-    key: 'heat-bubble',
-    label: 'Warm up the area of the bubble',
-    pointRange: [1, 2],
-    effect: '',
-  },
-  'emit-music': {
-    key: 'emit-music',
-    label: 'Send music via the laser',
-    pointRange: [1, 2],
-    effect: '',
-  },
 };
 
 export interface basicDataObject {
