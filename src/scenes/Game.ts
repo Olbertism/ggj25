@@ -96,9 +96,14 @@ export class Game extends Scene {
   }
 
   create() {
+    if (this.scene.manager.isActive('GameOver')) {
+      console.log('stopping go');
+      this.scene.stop('GameOver');
+    }
+
     // Create ActionHandler and store it in the registry if it doesn't exist
     if (!this.registry.has('actionHandler')) {
-      this.registry.set('actionHandler', new ActionHandler());
+      this.registry.set('actionHandler', new ActionHandler(this.events));
     }
 
     const actionHandler: ActionHandler = this.registry.get('actionHandler');
@@ -390,7 +395,6 @@ export class Game extends Scene {
     });
 
     eventsCenter.on('disableMovement', () => {
-      console.log('disableMovement');
       this.movementEnabled = false;
     });
 
@@ -401,7 +405,6 @@ export class Game extends Scene {
     eventsCenter.on(
       'gameOver',
       (text: string, outcome: { victory: boolean }) => {
-        console.log(text);
         this.scene.stop('Game');
         this.scene.stop('Intro');
         this.scene.stop('Tutorial');
@@ -417,6 +420,11 @@ export class Game extends Scene {
         });
       },
     );
+
+    // clean up when Scene is shutdown
+    this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+      eventsCenter.off('gameOver');
+    });
   }
 
   update() {

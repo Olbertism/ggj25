@@ -8,7 +8,7 @@ export class ActionHandler {
   private positiveThreshold: number;
   private negativeThreshold: number;
 
-  constructor() {
+  constructor(events: Phaser.Events.EventEmitter) {
     this.totalScore = 0; // Initialize totalScore
     this.actionsTaken = []; // Initialize actionsTaken
     this.maxActions = Math.floor(
@@ -23,7 +23,7 @@ export class ActionHandler {
 
     eventsCenter.on('action-event', this.handleAction, this);
 
-    eventsCenter.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+    events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       eventsCenter.off('action-event', this.handleAction, this);
     });
   }
@@ -101,6 +101,7 @@ export class ActionHandler {
   }
 
   getResults() {
+    console.log('getResults', this.actionsTaken);
     if (
       this.actionsTaken.filter((action) => action.key === 'pet-the-cat')
         .length < 1
