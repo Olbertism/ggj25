@@ -31,11 +31,11 @@ export class ActionHandler {
   handleAction(action: actionObject) {
     let points = 0;
     if (action.isBubble) {
-      const requireds = ['emit-music', 'heat-bubble', 'feed-rat', 'hum-melody'];
+      const required = ['emit-music', 'heat-bubble', 'feed-rat', 'hum-melody'];
       let amountOfTakenActions = 0;
       points = -6;
       this.actionsTaken.forEach((action) => {
-        if (requireds.includes(action.key)) {
+        if (required.includes(action.key)) {
           amountOfTakenActions += 1;
         }
       });
@@ -65,6 +65,13 @@ export class ActionHandler {
         );
       }
       amountOfTakenActions = 0;
+      this.actionsTaken.push({
+        key: action.key,
+        label: action.label,
+        points: points,
+        repeatable: action.repeatable,
+      });
+      return;
     } else {
       points = Math.floor(
         Math.random() *
@@ -84,7 +91,7 @@ export class ActionHandler {
       window.open('https://www.youtube.com/watch?v=VRvmn2WA0Q8', '_blank');
     }
 
-    if (this.actionsTaken.length === this.maxActions) {
+    if (this.actionsTaken.length > this.maxActions) {
       eventsCenter.emit(
         'gameOver',
         'You took to long and focused on the wrong things. You are pulled from this assignment...',

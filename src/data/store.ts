@@ -46,7 +46,7 @@ export const bubbleData: basicDataObject = {
       pointRange: [2, 3],
       effect:
         'It feels silly, but you hum the melody to the bubble. At first, it remains unchanged, but once you got a bit closer, you see small ripples on its surface. Something is happening...',
-      requires: ['ask-old-woman-dream'],
+      requires: ['ask-old-woman-dreams'],
     },
   ],
 };
@@ -160,7 +160,7 @@ export const cameraData: basicDataObject = {
 };
 
 export const guardData: basicDataObject = {
-  title: 'One of the security guards',
+  title: 'A security guard',
   message: 'The premise is guarded around the clock. The guards seem bored.',
   actions: [
     {
@@ -173,9 +173,9 @@ export const guardData: basicDataObject = {
     {
       key: 'ask-guard-opinion',
       label: 'Ask the the guard what he thinks the bubble is',
-      pointRange: [-2, -1],
+      pointRange: [-2, 0],
       effect:
-        '"The devil\'s work, that is for sure. If you ask me, which should seal off these things under a sarcophagus or so. Don\'t go too near there..."',
+        '"The devil\'s work, that is for sure. If you ask me, we should seal off these things under a sarcophagus or so. Don\'t go too near there..."',
     },
   ],
 };
